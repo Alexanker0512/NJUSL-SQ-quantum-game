@@ -1,1 +1,1 @@
-# NJUSLS-Q-quantum-game
+# NJUSSL-Q-quantum-game
