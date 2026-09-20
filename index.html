@@ -153,8 +153,8 @@ select {background:#fff;border:1px solid #c3d6e1;color:#2e5d77;padding:8px;borde
 .bond-pad {fill:#d6b25b;stroke:#927034;stroke-width:1;cursor:pointer;}
 .bond-pad.selected {stroke:#00aca6;stroke-width:4;}
 .bond-pad.bonded {fill:#7aa28d;}
-.bond-wire {filter:drop-shadow(1px 3px 2px #1d190b66);stroke-dasharray:120;stroke-dashoffset:0;animation:bond-draw .5s;}
-@keyframes bond-draw {from {stroke-dashoffset:120;}}
+.bond-wire {filter:drop-shadow(1px 3px 2px #1d190b66);stroke-dasharray:100;stroke-dashoffset:0;animation:bond-draw .7s linear;}
+@keyframes bond-draw {from {stroke-dashoffset:100;}}
 #package-lid.lowering {animation:lower-lid 1s ease;}
 @keyframes lower-lid {from {transform:translateY(-320px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 .lid-screw {cursor:pointer;}
@@ -170,7 +170,12 @@ select {background:#fff;border:1px solid #c3d6e1;color:#2e5d77;padding:8px;borde
 #cleaning-surface {touch-action:none;max-height:430px;}
 #cleaning-surface text {pointer-events:none;}
 .spray-rings {opacity:0;}
-.cleaning-active .spray-rings {opacity:1;transform-origin:center;animation:spray .6s linear infinite;}
+.cleaning-active .spray-rings {opacity:1;transform-origin:0 0;animation:cleaning-flow .9s linear infinite;}
+@keyframes cleaning-flow {
+  0% {transform:translate(-85px,-85px);opacity:0;}
+  20%,70% {opacity:.85;}
+  100% {transform:translate(65px,65px);opacity:0;}
+}
 @keyframes spray {from {transform:scale(.5);opacity:1;}to {transform:scale(1.3);opacity:0;}}
 .stain.cleaned {filter:drop-shadow(0 0 10px #efffff);}
 .laser-viewport {padding:16px;}
@@ -819,7 +824,7 @@ body.playing .workbench {min-height:0;display:grid;grid-template-rows:minmax(0,1
 [data-scene=processor] .stage-art .qubit-array {height:auto;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:6px;}
 [data-scene=processor] .stage-art .qubit-unit {grid-column:span 2;}
 [data-scene=processor] .stage-art .qubit-unit:nth-child(4) {grid-column:2 / span 2;}
-[data-scene=processor] .stage-art .qubit-unit {height:100%;max-height:none;}
+[data-scene=processor] .stage-art .qubit-unit {height:100%;max-height:none;padding:2px;}
 [data-scene=processor] .stage-art .qubit-unit:last-child {grid-column:4 / span 2;max-width:none;}
 [data-scene=processor] .stage-art>.circuit-editor {flex:none;width:100%;padding:8px 12px;background:#102b38;border-top:1px solid #43697c;}
 .stage-art>.circuit-editor .editor-qubits {gap:5px;margin:0;}
@@ -832,7 +837,7 @@ body.playing .workbench {min-height:0;display:grid;grid-template-rows:minmax(0,1
 .stage-art>.circuit-editor .circuit-scroll,.stage-art>.circuit-editor #operation-list {display:none;}
 .stage-art>.circuit-editor .workbench-actions {gap:5px;padding:6px 0 0;}
 .stage-art>.circuit-editor .workbench-actions button {flex:1;min-width:0;padding:4px 6px;}
-[data-scene=processor] .live-circuit {height:66px;}
+[data-scene=processor] .live-circuit {height:112px;flex-shrink:0;overflow-x:auto;}
 [data-scene=processor][data-phase=running] #processor-field {justify-content:center;}
 [data-scene=processor][data-phase=running] .stage-art .qubit-array {flex:0 1 65%;width:100%;max-height:420px;}
 [data-scene=processor][data-phase=running] .live-circuit {position:absolute;bottom:8px;left:0;width:100%;opacity:.15;transform:scale(.5);transform-origin:center bottom;}
@@ -848,9 +853,65 @@ body.playing .workbench {min-height:0;display:grid;grid-template-rows:minmax(0,1
  [data-scene=processor] .stage-art>.circuit-editor {padding:4px 8px;}
  .stage-art>.circuit-editor button {min-height:36px;}
  .stage-art>.circuit-editor #gate-instruction {min-height:16px;font-size:11px;margin:3px 0;}
- [data-scene=processor] .live-circuit {height:42px;}
+ [data-scene=processor] .live-circuit {height:76px;}
  [data-scene=processor] .stage-hud .processor-hud {font-size:10px;}
 }
+
+/* 游戏手势不触发文字选区或手机长按菜单；输入框仍允许正常编辑。 */
+.playing,.scene-sheet {user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
+.playing button,.playing [role=button],.scene-sheet button {touch-action:manipulation;}
+.playing input[type=text],.playing textarea {user-select:text;-webkit-user-select:text;}
+.fridge-svg.shielded .vacuum-can {visibility:hidden;}
+.laser-guide path {stroke:#fff2be!important;stroke-width:3!important;opacity:1!important;stroke-dasharray:5 3;filter:drop-shadow(0 0 1px #101b36);}
+.laser-ink {stroke:#51ff7b;stroke-width:4;filter:drop-shadow(0 0 3px #37e965);}
+.laser-halo {filter:drop-shadow(0 0 4px #ff3049);}
+.moving-laser-beam {opacity:0;pointer-events:none;}
+.firing .moving-laser-beam {opacity:1;}
+.action-dock .pulse-settings {grid-template-columns:repeat(2,minmax(0,1fr));}
+.action-dock .pulse-settings .range-control {display:grid;grid-template-rows:22px 28px;align-items:center;}
+.pulse-label {display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px;white-space:nowrap;font-size:11px;}
+.action-dock .pulse-label output {display:inline;float:none;text-align:right;font-size:11px;}
+.pulse-label .parameter-match {display:inline;text-align:center;font-size:10px;}
+.pulse-delay-control {grid-column:1/-1;}
+@media(min-width:700px){.action-dock .pulse-settings {grid-template-columns:repeat(3,minmax(0,1fr));}.pulse-delay-control {grid-column:auto;}}
+[data-scene=processor][data-phase=ready] .live-circuit {opacity:.3;}
+#protection-start,#pure-playback {flex:1;min-width:0;}
+[data-scene=processor][data-playback=pure] .processor-hud>span:not(:first-child) {display:none;}
+.parameter-match {display:block;color:#ffe29a;font-size:11px;line-height:1.4;}
+.rate-window-guide,.rate-window-caption {display:block;font-size:12px;color:#cfebe8;line-height:1.5;}
+.rate-slider {position:relative;display:block;}
+.rate-window {position:absolute;left:50%;width:40%;top:3px;bottom:3px;border:2px solid #73ecd3;border-radius:5px;background:#57dcbd26;pointer-events:none;}
+.rate-slider input {position:relative;z-index:1;width:100%;}
+.qubit-unit.under-threat {animation:target-warning .7s ease-in-out infinite;}
+@keyframes target-warning {50%{border-color:#ffba71;box-shadow:inset 0 0 18px #ff9b454d,0 0 10px #ffc86a55;}}
+[data-scene=maze] .action-dock {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;}
+[data-scene=maze] .action-dock>button {width:100%;min-width:0;margin:0;}
+[data-scene=maze] .action-dock .select-control {display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;}
+[data-scene=maze] .action-dock #maze-finish {grid-column:1/-1;}
+[data-scene=maze] .action-dock #prepare-paths {background:#173b48;color:#d3eeeb;border-color:#4c7480;}
+[data-scene=maze] .action-dock .maze-step-active {background:#61dfc2!important;color:#073830!important;border-color:#a8ffe5!important;box-shadow:0 0 10px #51deb329;}
+[data-scene=maze] .action-dock button:disabled {background:#152d39;color:#6c8791;border-color:#2d4c59;opacity:1;box-shadow:none;}
+
+.test-navigation-open {flex:none;min-width:42px;height:36px;padding:3px 6px;border:1px dashed #e8b864;border-radius:6px;background:#3b3020;color:#ffe3a5;font-size:12px;}
+.test-navigation-floating {position:fixed;right:12px;top:8px;z-index:20;}
+.test-destinations {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0;}
+.test-destinations button {min-width:0;font-size:13px;padding:8px 5px;}
+#test-navigation .sheet-content {overflow-y:auto;max-height:75dvh;}
+body.playing .level-head:has(.test-navigation-open) {gap:4px;}
+body.playing .level-head:has(.test-navigation-open) h1 {font-size:14px;}
+body.playing .level-head:has(.test-navigation-open) .step-pills span {display:none;}
+
+/* 两阶段操控共用全宽滑块区，按钮保持可点击尺寸。 */
+[data-scene=calibration] .action-dock .control-grid {width:100%;}
+[data-scene=calibration] .response-settings label:last-child {grid-column:1/-1;}
+[data-scene=calibration] .action-dock>button {flex:1 1 40%;}
+[data-scene=installation] .action-dock {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+[data-scene=installation] #test-chain {grid-column:2;grid-row:1;}
+[data-scene=installation] #scene-tools-open {grid-column:1/-1;grid-row:2;}
+.component-slot.signal-stop .slot-body {stroke:#ffe682;stroke-width:4;}
+[data-scene=installation] #seal-fridge,[data-scene=installation] #install-finish {grid-column:1/-1;}
+.component-slot.chip.fault .slot-body {animation:chip-interference .45s ease-in-out infinite alternate;}
+@keyframes chip-interference {to{fill:#b52445;stroke:#ffbcc9;}}
 
 
 </style>
@@ -896,12 +957,15 @@ const { createSceneScope } = loadModule(3);
 const { createAudio } = loadModule(4);
 const { recordResult } = loadModule(5);
 const { levelModules } = loadModule(6);
-const { createToast } = loadModule(41);
-const { renderNavigation } = loadModule(42);
-const { renderHome } = loadModule(43);
-const { renderLevelShell } = loadModule(44);
-const { renderResult, renderFinal } = loadModule(45);
-const { mountImmersive } = loadModule(46);
+const { createToast } = loadModule(47);
+const { renderNavigation } = loadModule(48);
+const { renderHome } = loadModule(49);
+const { renderLevelShell } = loadModule(50);
+const { renderResult, renderFinal } = loadModule(51);
+const { mountImmersive } = loadModule(52);
+const { ENABLE_TEST_NAVIGATION } = loadModule(53);
+const { createTestSession } = loadModule(54);
+const { createTestNavigation } = loadModule(55);
 
 /** 应用层负责导航与存档；关卡通过 context 使用公共服务。 */
 function createApplication(document) {
@@ -909,7 +973,18 @@ function createApplication(document) {
   const levelMap = document.querySelector('#level-map');
   const totalStars = document.querySelector('#total-stars');
   const soundButton = document.querySelector('#sound-button');
-  const progress = createProgressStore();
+  const normalProgress = createProgressStore();
+  let progress = normalProgress;
+  const testing = () => progress !== normalProgress;
+  const testNavigation = ENABLE_TEST_NAVIGATION ? createTestNavigation({
+    document,isTesting:testing,
+    onJump({level,step}) {
+      if(!testing())progress=createTestSession(normalProgress.state);
+      soundButton.textContent=progress.state.sound?'♪':'×';
+      startLevel(level,step);
+    },
+    onExit(){progress=normalProgress;soundButton.textContent=progress.state.sound?'♪':'×';goHome();}
+  }) : null;
   const scene = createSceneScope();
   const beep = createAudio(() => progress.state.sound);
   const showToast = createToast(document.querySelector('#toast'));
@@ -952,9 +1027,11 @@ function createApplication(document) {
       save: progress.state,
       startLevel
     });
+    testNavigation?.attach(root);
   }
-  function startLevel(id) {
+  function startLevel(id, testStep = null) {
     if (id > progress.state.unlocked) return;
+    document.querySelector('#toast').classList.remove('show');
     scene.clear();
     menu.close();
     document.body.classList.add('playing');
@@ -971,6 +1048,7 @@ function createApplication(document) {
       beep,
       showToast,
       awardLevel,
+      testStep: ENABLE_TEST_NAVIGATION && testing() ? testStep : null,
       navigate: startLevel,
       experiment: {
         load: () => progress.state.experiment,
@@ -983,6 +1061,7 @@ function createApplication(document) {
         scene.clear();
         renderLevelShell(root, ...args);
         mountImmersive(root, scene);
+        testNavigation?.attach(root);
       }
     });
   }
@@ -1002,6 +1081,7 @@ function createApplication(document) {
       startLevel,
       showFinal
     });
+    testNavigation?.attach(root);
   }
   function showFinal() {
     scene.clear();
@@ -1014,6 +1094,7 @@ function createApplication(document) {
       goHome,
       startLevel
     });
+    testNavigation?.attach(root);
   }
   function start() {
     document.querySelector('#home-button').addEventListener('click', goHome);
@@ -1026,7 +1107,8 @@ function createApplication(document) {
     });
     document.querySelector('#reset-button').addEventListener('click', () => {
       if (confirm('确定清除所有星级、分数和成就吗？')) {
-        progress.reset();
+        if(testing())progress=createTestSession(normalProgress.state);
+        else progress.reset();
         soundButton.textContent = '♪';
         goHome();
       }
@@ -1193,10 +1275,10 @@ return { evaluateMetrics, recordResult };
 // src\features\registry.js
 const { mount: fabrication } = loadModule(7);
 const { mount: installation } = loadModule(13);
-const { mount: cooling } = loadModule(17);
-const { mount: control } = loadModule(26);
-const { mount: measurement } = loadModule(35);
-const { mount: maze } = loadModule(37);
+const { mount: cooling } = loadModule(18);
+const { mount: control } = loadModule(29);
+const { mount: measurement } = loadModule(41);
+const { mount: maze } = loadModule(43);
 const levelModules = {
   1: fabrication,
   2: installation,
@@ -1221,7 +1303,8 @@ function mount({
   shell,
   beep,
   showToast,
-  awardLevel
+  awardLevel,
+  testStep = null
 }) {
   let wrongTools = 0,
     misbonds = 0,
@@ -1333,13 +1416,13 @@ function mount({
     root.querySelector('#clean-next').addEventListener('click', lithography);
   }
   function lithography() {
-    render(1, '按住亮起的方向键，让激光沿路线前进；电脑也可以用键盘方向键。', lithographyView());
+    render(1, '按住亮起的方向键，让红色激光沿白色虚线曝光。紫色是光刻胶，经过的芯片图案会变绿。', lithographyView());
     mountLaser({ root, scene, beep, onComplete: () => { traceAccuracy = 100; } });
     root.querySelector('#trace-reset').addEventListener('click', lithography);
     root.querySelector('#trace-next').addEventListener('click', processing);
   }
   function processing() {
-    render(2, '依次点击亮起的工序：曝光 → 显影 → 刻蚀 → 去胶。', processingView());
+    render(2, '激光绘图已完成曝光。依次点击：显影 → 刻蚀 → 去胶，把图案变成芯片。', processingView());
     let developed = 0, etched = 0;
     function activate(selector) {
       const button = root.querySelector(selector);
@@ -1350,18 +1433,6 @@ function mount({
       button.disabled = true;
       button.classList.remove('ready-action');
     }
-    root.querySelector('#expose').addEventListener('click', event => {
-      finishButton(event.currentTarget);
-      root.querySelector('.process-viewport').classList.add('exposing');
-      root.querySelector('#exposed-pattern').style.opacity = '.65';
-      root.querySelector('#process-status').textContent = '正在曝光';
-      scene.timeout(() => {
-        root.querySelector('.process-viewport').classList.remove('exposing');
-        activate('#develop');
-        root.querySelector('#process-status').textContent = '轮到显影';
-        root.querySelector('#process-caption').textContent = '图案已印好，点击显影打开电路区域的胶层。';
-      }, 1000);
-    });
     root.querySelector('#develop').addEventListener('click', event => {
       developed++;
       beep(540, .03);
@@ -1405,6 +1476,12 @@ function mount({
       }, 850);
     });
     root.querySelector('#process-next').addEventListener('click', packaging);
+    if (['develop','etch','strip'].includes(testStep)) {
+      scene.timeout(()=>{
+        if (testStep==='etch'||testStep==='strip') for(let i=0;i<6;i++)root.querySelector('#develop').click();
+        if (testStep==='strip') for(let i=0;i<6;i++)root.querySelector('#etch').click();
+      },0);
+    }
   }
   function packaging() {
     render(3, '装载芯片，连接芯片与基板焊盘，再放下屏蔽盖并拧紧四颗螺丝。', packagingView());
@@ -1423,7 +1500,7 @@ function mount({
       return { id, x, y, outerX: x + dx, outerY: y + dy };
     });
     function guideBond() {
-      const nextPad = root.querySelector('.bond-pad.inner:not(.bonded)');
+      const nextPad = root.querySelector('.bond-pad.outer:not(.bonded)');
       root.querySelectorAll('.bond-pad').forEach(pad => pad.classList.remove('suggested'));
       if (nextPad) nextPad.classList.add('suggested');
     }
@@ -1434,7 +1511,7 @@ function mount({
       tray.hidden = true;
       root.querySelector('.control-panel h3').textContent = '按相同编号连接金线';
       root.querySelector('#packaged-chip').setAttribute('opacity', '1');
-      root.querySelector('#package-hint').textContent = '先点芯片边缘焊盘，再点对应位置的样品盒焊盘。';
+      root.querySelector('#package-hint').textContent = '先点样品盒外侧亮起的焊盘，再点芯片上相同编号的焊盘。';
       root.querySelector('#package-status').textContent = '芯片已就位';
       root.querySelector('#bond-pads').innerHTML = pads.map(p => ['inner', 'outer'].map(kind => {
         const x = kind === 'inner' ? p.x : p.outerX, y = kind === 'inner' ? p.y : p.outerY;
@@ -1445,27 +1522,26 @@ function mount({
         const connect = () => {
           if (pad.classList.contains('bonded')) return;
           const id = Number(pad.dataset.pad);
-          if (pad.dataset.kind === 'inner') {
+          if (pad.dataset.kind === 'outer') {
             root.querySelectorAll('.bond-pad').forEach(p => p.classList.remove('selected'));
             selected = id;
             pad.classList.add('selected');
             root.querySelectorAll('.bond-pad').forEach(p => p.classList.remove('suggested'));
-            root.querySelector('.bond-pad.outer[data-pad="' + id + '"]').classList.add('suggested');
-            root.querySelector('#package-hint').textContent = '现在点击盒子上同样编号的 ' + (id + 1) + ' 号焊盘。';
+            root.querySelector('.bond-pad.inner[data-pad="' + id + '"]').classList.add('suggested');
+            root.querySelector('#package-hint').textContent = '现在点击芯片上亮起的 ' + (id + 1) + ' 号焊盘。';
             return;
           }
           if (selected !== id) {
-            misbonds++;
-            showToast('请先选择对应的芯片焊盘。');
+            showToast('先点样品盒焊盘，再点芯片上同号焊盘；点错不扣分。');
             return;
           }
           const p = pads[id];
-          root.querySelector('#bond-wires').insertAdjacentHTML('beforeend', `<path class="bond-wire" d="M${p.x} ${p.y} Q${(p.x + p.outerX) / 2 - (p.outerY !== p.y ? 12 : 0)} ${(p.y + p.outerY) / 2 - (p.outerX !== p.x ? 12 : 0)} ${p.outerX} ${p.outerY}" fill="none" stroke="#ecc66b" stroke-width="3"/>`);
+          root.querySelector('#bond-wires').insertAdjacentHTML('beforeend', `<path class="bond-wire" pathLength="100" d="M${p.outerX} ${p.outerY} Q${(p.x + p.outerX) / 2 - (p.outerY !== p.y ? 12 : 0)} ${(p.y + p.outerY) / 2 - (p.outerX !== p.x ? 12 : 0)} ${p.x} ${p.y}" fill="none" stroke="#ecc66b" stroke-width="3"/>`);
           root.querySelectorAll('[data-pad="' + id + '"]').forEach(node => { node.classList.add('bonded'); node.classList.remove('selected'); });
           selected = null;
           bonds++;
           guideBond();
-          root.querySelector('#package-hint').textContent = bonds === 8 ? '八根金线已连接！安装屏蔽盖。' : '连接成功！先点芯片上亮起的焊盘，再点盒子上的同号焊盘。';
+          root.querySelector('#package-hint').textContent = bonds === 8 ? '八根金线已连接！安装屏蔽盖。' : '连接成功！先点盒子上亮起的焊盘，再点芯片上的同号焊盘。';
           root.querySelector('#bond-count').textContent = bonds + ' / 8';
           beep(700, .05);
           if (bonds === 8) { root.querySelector('#mount-lid').disabled = false; root.querySelector('#mount-lid').classList.add('ready-action'); }
@@ -1530,8 +1606,15 @@ function mount({
       '图形精度': traceAccuracy,
       '键合质量': Math.max(60, 100 - misbonds * 6)
     }, misbonds === 0 ? ['精密封装工程师'] : []));
+    if(testStep==='bonding'||testStep==='lid')install();
+    if(testStep==='lid') {
+      for(let id=0;id<8;id++) for(const kind of ['outer','inner']) {
+        root.querySelector(`[data-pad="${id}"][data-kind="${kind}"]`).dispatchEvent(new MouseEvent('click',{bubbles:true}));
+      }
+    }
   }
-  cleaning();
+  const entry = {lithography,processing,develop:processing,etch:processing,strip:processing,packaging,bonding:packaging,lid:packaging};
+  (entry[testStep] || cleaning)();
 }
 
 return { mount };
@@ -1598,7 +1681,7 @@ function cleaningView(stains) {
         <circle r="${stain.radius * .55}" fill="none" stroke="${stain.type === 'dust' ? '#edcc94' : '#cfb9ff'}" stroke-dasharray="3 4" opacity=".7"/>
         <text y="4" text-anchor="middle" fill="#fff" font-size="12">${stain.type === 'stubborn' ? '顽固' : stain.type === 'organic' ? '有机' : '浮尘'}</text>
       </g>`).join('')}</g>
-      <g id="cleaning-nozzle" opacity="0" pointer-events="none"><g class="spray-rings"><circle r="22" fill="none" stroke="#8dedff" stroke-width="3"/><circle r="37" fill="none" stroke="#8dedff" stroke-dasharray="3 8"/></g><circle r="44" fill="#4eb4d7" opacity=".15" stroke="#35b3df"/><path d="M-28 0H28M0-28V28" stroke="#a6eaff" stroke-width="2"/><text x="50" y="0" class="svg-label">N₂</text></g>
+      <g id="cleaning-nozzle" opacity="0" pointer-events="none"><g class="spray-rings"><circle r="11" fill="#123b80" stroke="#2457a4" stroke-width="1"/><circle r="18.5" fill="#123b80" fill-opacity=".4" stroke="#2457a4" stroke-width="1"/></g><circle r="44" fill="#4eb4d7" opacity=".15" stroke="#35b3df"/><path d="M-28 0H28M0-28V28" stroke="#a6eaff" stroke-width="2"/><text x="50" y="0" class="svg-label">N₂</text></g>
     </svg><div class="viewport-caption"><i></i>按住污渍并移动探头，看它慢慢消失</div>
   </section><aside class="control-panel cleaning-controls">
     <h3>选择清洁工具</h3><button class="tool-button selected" data-tool="blow"><b>💨 吹走浮尘</b><span>棕色浮尘 / 已松动的污渍</span></button>
@@ -1615,10 +1698,11 @@ function lithographyView() {
   <svg id="trace-surface" viewBox="300 105 200 335" aria-label="方向键操控激光描绘十字电容">
     <defs><clipPath id="laser-cell-clip"><rect x="325" y="120" width="150" height="308"/></clipPath></defs>
     <g clip-path="url(#laser-cell-clip)">${chipPattern('trace', false, false)}</g>
+    <rect class="laser-resist" x="325" y="120" width="150" height="308" rx="5" fill="#9863c8" opacity=".38"/>
     <g class="laser-guide">${LASER_ROUTES.map(route => `<path d="${routePath(route.points)}"/>`).join('')}</g>
     <g id="trace-ink">${LASER_ROUTES.map((_, i) => `<path id="laser-ink-${i}" class="laser-ink"/>`).join('')}</g>
     <circle id="laser-target" r="6" fill="#ffe59a"/>
-    <g id="laser-head"><circle class="laser-halo" r="13" fill="#66e6ff" opacity=".25"/><circle r="3.5" fill="#fff"/><path d="M-17 0H-7M7 0H17M0-17V-7M0 7V17" stroke="#b7f8ff"/></g>
+    <g id="laser-head"><g class="moving-laser-beam" aria-hidden="true"><path d="M-55 -150L0 0" stroke="#ff334c" stroke-width="7" opacity=".2"/><path d="M-55 -150L0 0" stroke="#ff455c" stroke-width="2" opacity=".65"/></g><circle class="laser-halo" r="13" fill="#ff3049" opacity=".4"/><circle r="4.5" fill="#ff3448" stroke="#ffe2d5"/><path d="M-17 0H-7M7 0H17M0-17V-7M0 7V17" stroke="#ff5969" stroke-width="2"/></g>
   </svg>
   <div class="laser-controls"><strong id="laser-hint" aria-live="polite"></strong>
     <div class="direction-pad" aria-label="激光方向按钮">
@@ -1637,7 +1721,7 @@ function lithographyView() {
   </aside></div></div>`;
 }
 function processingView() {
-  return `<div class="workbench"><div class="instrument-head"><div><span class="eyebrow">CHIP / PROCESS</span><h2>把画好的电路，变成芯片</h2></div><span id="process-status" class="live-badge">等待曝光</span></div>
+  return `<div class="workbench"><div class="instrument-head"><div><span class="eyebrow">CHIP / PROCESS</span><h2>把画好的电路，变成芯片</h2></div><span id="process-status" class="live-badge">曝光完成 · 开始显影</span></div>
   <div class="bench-grid"><section class="viewport chip-viewport process-viewport">
     <svg id="process-chip" viewBox="0 0 800 500" aria-label="电路区域显影、刻蚀与最后去胶">
       <defs><mask id="resist-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="500">
@@ -1648,15 +1732,14 @@ function processingView() {
       <g id="etch-underlay">${circuitShapes('#536b89')}</g>
       <g id="etched-pattern" opacity="0">${circuitShapes('#e3f5ff')}</g>
       <rect id="resist-film" x="32" y="27" width="736" height="446" rx="6" fill="#9366ac" mask="url(#resist-mask)"/>
-      <g id="exposed-pattern" opacity="0">${circuitShapes('#e3a3ff')}</g>
+      <g id="exposed-pattern" opacity=".65">${circuitShapes('#63f58c')}</g>
     </svg>
     <div class="exposure-beam"></div><div id="etch-scan" class="etch-scan"></div>
-    <div class="viewport-caption" id="process-caption">紫色是保护胶，先把电路图案曝光上去。</div>
+    <div class="viewport-caption" id="process-caption">激光已完成曝光，绿色是已曝光图案。点击显影打开电路区域。</div>
   </section><aside class="control-panel"><div class="process-buttons">
-    <button class="tool-button ready-action" id="expose"><b>① 曝光</b></button>
-    <button class="tool-button" id="develop" disabled><b>② 显影 · 点 6 次</b></button>
-    <button class="tool-button" id="etch" disabled><b>③ 刻蚀 · 点 6 次</b></button>
-    <button class="tool-button" id="strip" disabled><b>④ 去胶</b></button>
+    <button class="tool-button ready-action" id="develop"><b>① 显影 · 点 6 次</b></button>
+    <button class="tool-button" id="etch" disabled><b>② 刻蚀 · 点 6 次</b></button>
+    <button class="tool-button" id="strip" disabled><b>③ 去胶</b></button>
   </div><div class="readout horizontal"><small id="process-label">加工进度</small><strong id="process-progress">0%</strong></div>
   <button class="primary" id="process-next" disabled>芯片做好了 · 去封装 →</button>
   <p class="science-note">这里用电路区域变色说明图形转移，其余保护胶保留到最后。真实减法刻蚀主要移除需要留空的金属；结的制造另有多道工艺，此处不按实际掩膜极性模拟。</p>
@@ -1761,6 +1844,10 @@ function mountLaser({ root, scene, beep, onComplete }) {
   const totalDistance = LASER_ROUTES.reduce((sum, route) => sum + route.points.slice(1).reduce((length, p, i) =>
     length + Math.hypot(p[0] - route.points[i][0], p[1] - route.points[i][1]), 0), 0);
   const buttons = [...root.querySelectorAll('[data-direction]')];
+  function release() {
+    heldDirection=null;
+    root.querySelector('#laser-head').classList.remove('firing');
+  }
   const names = { ArrowUp: '↑ 上', ArrowDown: '↓ 下', ArrowLeft: '← 左', ArrowRight: '→ 右' };
   function segment() {
     const points = LASER_ROUTES[routeIndex].points;
@@ -1781,7 +1868,7 @@ function mountLaser({ root, scene, beep, onComplete }) {
     const percent = Math.round((distanceDone + travelled) / totalDistance * 100);
     root.querySelector('#coverage').textContent = `${percent}%`;
     root.querySelector('#trace-meter').style.width = `${percent}%`;
-    root.querySelector('#laser-hint').textContent = `${LASER_ROUTES[routeIndex].name} · 按住 ${names[direction]}`;
+    root.querySelector('#laser-hint').textContent = `画芯片：${LASER_ROUTES[routeIndex].name} · 按住 ${names[direction]}`;
     buttons.forEach(button => button.classList.toggle('next-direction', button.dataset.direction === direction));
     root.querySelector('#trace-surface').dataset.direction = direction;
   }
@@ -1791,16 +1878,16 @@ function mountLaser({ root, scene, beep, onComplete }) {
       button.setPointerCapture(event.pointerId);
       heldDirection = button.dataset.direction;
     });
-    scene.listen(button, 'pointerup', () => heldDirection = null);
-    scene.listen(button, 'pointercancel', () => heldDirection = null);
+    scene.listen(button, 'pointerup', release);
+    scene.listen(button, 'pointercancel', release);
   });
   scene.listen(window, 'keydown', event => {
     if (!(event.key in names) || /INPUT|SELECT|TEXTAREA/.test(event.target.tagName)) return;
     event.preventDefault();
     heldDirection = event.key;
   });
-  scene.listen(window, 'keyup', event => { if (event.key === heldDirection) heldDirection = null; });
-  scene.listen(window, 'blur', () => heldDirection = null);
+  scene.listen(window, 'keyup', event => { if (event.key === heldDirection) release(); });
+  scene.listen(window, 'blur', release);
   draw();
   animate(scene, (_, delta) => {
     if (finished) return;
@@ -1821,7 +1908,7 @@ function mountLaser({ root, scene, beep, onComplete }) {
       if (routeIndex === LASER_ROUTES.length) {
         finished = true;
         root.querySelector('#laser-head').classList.remove('firing');
-        root.querySelector('#laser-hint').textContent = '电路完成 · 点击继续';
+        root.querySelector('#laser-hint').textContent = '芯片图案曝光完成 · 进入显影';
         buttons.forEach(button => { button.disabled = true; button.classList.remove('next-direction'); });
         root.querySelector('#trace-next').disabled = false;
         root.querySelector('#trace-next').classList.add('ready-action');
@@ -1868,14 +1955,16 @@ return { svgPoint, animate, randomBetween, shuffle };
 const { LEVELS } = loadModule(8);
 const { installationView } = loadModule(14);
 const { COMPONENTS, CONNECTORS } = loadModule(16);
-const { shuffle, animate } = loadModule(12);
+const { shuffle } = loadModule(12);
+const { createSignalTest } = loadModule(17);
 function mount({
   root,
   scene,
   shell,
   showToast,
   beep,
-  awardLevel
+  awardLevel,
+  testStep = null
 }) {
   const broken = new Set(shuffle(CONNECTORS).slice(0, 3).map(c => c.id));
   const installed = new Set(),
@@ -1884,9 +1973,10 @@ function mount({
     mistakes = 0,
     attempts = 0,
     testing = false;
-  shell(LEVELS[1], 0, 1, '先选器件，再点对应温度的位置；接好后发送测试信号。', installationView(broken));
+  shell(LEVELS[1], 0, 1, '先选器件，再点温级安装位。检查线路通断；隔离器、放大器箭头须朝上，点击器件可翻转。', installationView(broken));
   const parts = root.querySelectorAll('[data-part]'),
     slots = root.querySelectorAll('[data-slot]');
+  const testSignal=createSignalTest(root,scene);
   parts.forEach(part => {
     part.addEventListener('click', () => {
       selected = part.dataset.part;
@@ -1912,10 +2002,11 @@ function mount({
     slot.querySelector('.slot-label').textContent = component.name;
     root.querySelector('[data-part="' + id + '"]').disabled = true;
     root.querySelector('#installed-count').textContent = installed.size + ' / 7';
-    root.querySelector('#test-chain').disabled = installed.size !== 7;
+    root.querySelector('#test-chain').disabled = false;
     selected = null;
     parts.forEach(p => p.classList.remove('selected'));
     beep(580, .04);
+    if (component.directional && testStep !== 'shields') showToast('这是有向器件：检查箭头朝上，点已安装的器件可翻转。');
   }
   slots.forEach(slot => {
     slot.addEventListener('dragover', e => {
@@ -1965,41 +2056,13 @@ function mount({
     attempts++;
     event.currentTarget.disabled = true;
     root.querySelectorAll('.fault').forEach(node => node.classList.remove('fault'));
-    const faults = [...CONNECTORS.filter(c => broken.has(c.id)).map(c => ({
-      ...c,
-      type: 'link'
-    })), ...COMPONENTS.filter(c => reversed.has(c.id)).map(c => ({
-      ...c,
-      type: 'direction'
-    }))].sort((a, b) => a.order - b.order);
-    const fault = faults[0];
-    const signal = root.querySelector('#signal-travel');
-    let progress = 1;
-    if (fault) {
-      // 在真实 SVG 路径上定位断点，红色信号停在故障接头，而不是按步骤数估算。
-      const length = signal.getTotalLength();
-      let nearestDistance = Infinity;
-      for (let segment = 0; segment <= 1000; segment++) {
-        const point = signal.getPointAtLength(length * segment / 1000);
-        const distance = Math.hypot(point.x - fault.x, point.y - fault.y);
-        if (distance < nearestDistance) {
-          nearestDistance = distance;
-          progress = segment / 1000;
-        }
-      }
-    }
-    signal.style.transition = 'none';
-    signal.style.strokeDashoffset = 100;
-    void signal.getBoundingClientRect();
-    signal.style.transition = 'stroke-dashoffset ' + 2.8 * progress + 's linear';
-    signal.style.strokeDashoffset = 100 * (1 - progress);
-    root.querySelector('#link-feedback').textContent = '测试脉冲传播中：黄色线路逐渐变红。';
-    scene.timeout(() => {
+    root.querySelector('#link-feedback').textContent = '双频波包传播：两次衰减后波峰为原始的 ⅓，滤波器移除高频；此为教学比例。';
+    testSignal(installed,reversed,broken,fault => {
       testing = false;
       if (fault) {
         root.querySelector('#test-chain').disabled = false;
         root.querySelector(fault.type === 'link' ? '[data-link="' + fault.id + '"]' : '[data-slot="' + fault.id + '"]').classList.add('fault');
-        root.querySelector('#link-feedback').textContent = fault.type === 'link' ? '信号在接头处中断。点击红色接头恢复方向。' : fault.name + '方向反了，点击器件翻转箭头。';
+        root.querySelector('#link-feedback').textContent = fault.type === 'link' ? '信号在接头处中断。点击红色接头恢复方向。' : fault.type==='missing'? '缺少'+fault.name+'，请安装标红位置。':fault.name + '方向错误，反向信号已停在上一个正确器件。点击红色器件翻转箭头。';
         showToast('链路尚未通过：请排除标红位置。');
       } else {
         root.querySelector('#link-feedback').textContent = '输入 → 衰减 / 滤波 → 芯片 → 隔离 → 放大 → 输出，全部通过。';
@@ -2009,22 +2072,24 @@ function mount({
         root.querySelectorAll('[data-link]').forEach(c => c.style.pointerEvents = 'none');
         beep(760, .18);
       }
-    }, 2800 * progress + 100);
+    });
   });
   let shieldLayer = 0;
   root.querySelector('#seal-fridge').addEventListener('click', event => {
     event.currentTarget.disabled = true;
     shieldLayer++;
     root.querySelector('[data-shield="' + shieldLayer + '"]').classList.add('mounted');
-    root.querySelector('#install-status').textContent = ['安装 4 K 辐射屏', '安装 50 K 辐射屏', '安装真空外罐'][shieldLayer - 1];
+    const shields = ['安装 10 mK 屏蔽筒','安装 4 K 辐射屏', '安装 50 K 辐射屏', '安装真空外罐'];
+    root.querySelector('#install-status').textContent = shields[shieldLayer - 1];
     root.querySelector('.microwave-chain').classList.add('covered');
+    root.querySelector('.fridge-svg').classList.add('shielded');
     scene.timeout(() => {
-      if (shieldLayer < 3) {
+      if (shieldLayer < 4) {
         root.querySelector('#seal-fridge').disabled = false;
-        root.querySelector('#seal-fridge').textContent = shieldLayer === 1 ? '安装 50 K 辐射屏' : '安装真空外罐';
+        root.querySelector('#seal-fridge').textContent = shields[shieldLayer];
       } else {
         root.querySelector('#install-finish').disabled = false;
-        root.querySelector('#install-status').textContent = '三层封装完成';
+        root.querySelector('#install-status').textContent = '四层封装完成';
       }
     }, 1300);
   });
@@ -2033,6 +2098,15 @@ function mount({
     '链路诊断': Math.max(65, 105 - attempts * 5),
     '完整性': 100
   }, attempts === 1 ? ['微波链路专家'] : []));
+  if(testStep==='shields') {
+    COMPONENTS.forEach(component=>place(component.id,root.querySelector(`[data-slot="${component.id}"]`)));
+    reversed.clear();broken.clear();
+    COMPONENTS.filter(component=>component.directional).forEach(component=>root.querySelector(`[data-slot="${component.id}"] .slot-symbol`).textContent='↑');
+    root.querySelectorAll('[data-link]').forEach(node=>node.classList.remove('broken'));
+    root.querySelector('#test-chain').disabled=true;
+    root.querySelector('#seal-fridge').disabled=false;
+    root.querySelector('#link-feedback').textContent='测试预置：器件就位、方向正确、链路连通，可逐层加盖。';
+  }
 }
 
 return { mount };
@@ -2041,6 +2115,7 @@ return { mount };
 // src\features\installation\views.js
 const { fridgeSvg } = loadModule(15);
 const { COMPONENTS, CONNECTORS, SIGNAL_ROUTE } = loadModule(16);
+const { shuffle } = loadModule(12);
 function installationView(broken) {
   const overlay = `<g class="microwave-chain">
  <path class="signal-base" d="${SIGNAL_ROUTE}" fill="none" stroke="#caa044" stroke-width="5"/>
@@ -2048,15 +2123,15 @@ function installationView(broken) {
  <text x="220" y="27" text-anchor="middle" class="svg-label">微波输入 ↓</text><text x="420" y="27" text-anchor="middle" class="svg-label">读出输出 ↑</text>
  ${CONNECTORS.map(c => `<g class="line-connector ${broken.has(c.id) ? 'broken' : ''}" data-link="${c.id}" transform="translate(${c.x} ${c.y})" role="button" tabindex="0" aria-label="转动线路连接器 ${c.id + 1}"><rect x="-20" y="-22" width="40" height="44" rx="6"/><path d="M0-22V22"/><circle r="5"/></g>`).join('')}
  ${COMPONENTS.map(c => `<g class="component-slot" data-slot="${c.id}" transform="translate(${c.x} ${c.y})" role="button" tabindex="0" aria-label="${c.stage} 安装位 ${c.name}"><rect class="slot-body" x="-35" y="-23" width="70" height="46" rx="5"/><text class="slot-symbol" text-anchor="middle" y="5">＋</text><text class="slot-label" text-anchor="middle" y="37">${c.stage}</text></g>`).join('')}
- </g>`;
+ <g id="signal-packet" pointer-events="none" visibility="hidden"><path fill="none" stroke="#fff087" stroke-width="3"/><polygon points="11,0 -8,-7 -8,7" fill="#ff745f"/></g></g>`;
   return `<div class="workbench"><div class="instrument-head"><div><span class="eyebrow">CRYOSTAT / MICROWAVE CHAIN</span><h2>沿着温级，把信号送入量子芯片。</h2></div><span id="install-status" class="live-badge">ASSEMBLY MODE</span></div>
  <div class="installation-layout"><aside class="control-panel inventory"><h3>元器件仓</h3><p>拖拽器件，或点选器件后点击安装位。</p>
- ${COMPONENTS.map(c => `<button class="inventory-part" data-part="${c.id}" draggable="true"><span class="hardware-mini ${c.kind}"></span><span><b>${c.name}</b><small>${c.stage}${c.directional ? ' · 有向器件' : ''}</small></span></button>`).join('')}
+ ${shuffle(COMPONENTS).map(c => `<button class="inventory-part" data-part="${c.id}" draggable="true"><span class="hardware-mini ${c.kind}"></span><span><b>${c.name}</b><small>${c.stage}${c.directional ? ' · 检查箭头 ↑' : ''}</small></span></button>`).join('')}
  </aside><section class="viewport fridge-viewport" id="assembly-viewport">${fridgeSvg('assembly', overlay)}
  <div class="viewport-caption">黄色：连接线路　红色：信号传播　↑：器件正向</div></section>
  <aside class="control-panel diagnostics"><h3>链路诊断</h3><ol class="task-list"><li>安装全部 7 个元器件</li><li>点击断点旋转接头</li><li>隔离器与放大器箭头朝上</li><li>发送信号逐段测试</li><li>装上制冷机真空罐</li></ol>
  <div class="readout"><small>已安装</small><strong id="installed-count">0 / 7</strong><span id="link-feedback">器件放置于对应温级，芯片在最冷端。</span></div>
- <button class="primary" id="test-chain" disabled>发送链路测试信号</button><button class="secondary" id="seal-fridge" disabled>加盖 · 封装制冷机</button><button class="primary" id="install-finish" disabled>进入降温准备 →</button>
+ <button class="primary" id="test-chain">信号测试 ▶</button><button class="secondary" id="seal-fridge" disabled>加盖 · 封装制冷机</button><button class="primary" id="install-finish" disabled>进入降温准备 →</button>
  <p class="science-note">右侧为读出放大链，信号从芯片向室温传播。隔离器保护芯片免受反向噪声；本图是简化的双端口教学链路。</p>
  </aside></div></div>`;
 }
@@ -2075,7 +2150,7 @@ const STAGES = [
 ];
 const CRYO = { inputX: 220, outputX: 420, sampleY: 714 };
 
-/** 盘、线路和样品挂点使用同一坐标系。外壳由内至外分三次安装。 */
+/** 盘、线路和样品挂点使用同一坐标系。外壳由内至外分四次安装。 */
 function fridgeSvg(prefix = 'fridge', overlay = '', sealed = false) {
   return `<svg class="fridge-svg ${sealed ? 'sealed' : ''}" viewBox="70 10 545 810" aria-label="带分层辐射屏和 MC 下方样品的稀释制冷机">
   <defs>
@@ -2091,6 +2166,7 @@ function fridgeSvg(prefix = 'fridge', overlay = '', sealed = false) {
     <path d="M291 325v275M350 325v275" stroke="#a2bac3" stroke-width="4"/>
     ${Array.from({length:16},(_,i)=>`<path d="M297 ${352+i*17}q22 15 45 0" fill="none" stroke="#b99865" stroke-width="4"/>`).join('')}
     <path d="M177 105L201 637M463 105L439 637" stroke="url(#${prefix}-steel)" stroke-width="7"/>
+    <path d="M300 635v60M340 635v60" stroke="#d7b478" stroke-width="9"/>
     ${STAGES.map((s,i)=>`<g class="thermal-stage" data-stage="${i}">
       <path d="M${320-s.width/2} ${s.y}v14a${s.width/2} 29 0 0 0 ${s.width} 0v-14" fill="url(#${prefix}-copper)" stroke="#9e7949"/>
       <ellipse class="plate-top" cx="320" cy="${s.y}" rx="${s.width/2}" ry="28" fill="url(#${prefix}-copper)" stroke="#f0d39a" stroke-width="2"/>
@@ -2100,16 +2176,15 @@ function fridgeSvg(prefix = 'fridge', overlay = '', sealed = false) {
       <text x="535" y="${s.y+5}" class="stage-temp">${s.temp}</text>
       ${i===5?'<text x="322" y="618" text-anchor="middle" fill="#e5f6ff" font-size="17">MC</text>':''}
     </g>`).join('')}
-    <path d="M300 651v44M340 651v44" stroke="#d7b478" stroke-width="9"/>
     <rect x="285" y="694" width="70" height="42" rx="5" fill="url(#${prefix}-copper)" stroke="#f1d595"/>
     <rect x="301" y="704" width="38" height="19" fill="#172d48" stroke="#bbd4e8"/>
     <text x="320" y="763" text-anchor="middle" class="svg-label">铜连接件 → 量子芯片</text>
   </g>
   <g class="vacuum-can"><path d="M118 97v637c0 60 404 60 404 0V97" fill="url(#${prefix}-glass)" stroke="#77a8bb" stroke-width="2"/><ellipse cx="320" cy="97" rx="202" ry="35" fill="none" stroke="#93b7c5" stroke-width="4"/><path d="M85 460h35" stroke="#9cb6c4" stroke-width="14"/><path d="M100 448v24" stroke="#bfd1da" stroke-width="5"/></g>
   ${overlay}
-  ${[{top:315,bottom:750,width:300,label:'4 K 辐射屏'}, {top:205,bottom:765,width:355,label:'50 K 辐射屏'}, {top:100,bottom:780,width:404,label:'真空外罐'}].map((s,i)=>`<g class="shield-shell shield-${i+1}" data-shield="${i+1}">
+  ${[{top:635,bottom:740,width:270,label:'10 mK 屏蔽筒'}, {top:315,bottom:750,width:325,label:'4 K 辐射屏'}, {top:205,bottom:765,width:350,label:'50 K 辐射屏'}, {top:100,bottom:780,width:370,label:'真空外罐'}].map((s,i)=>`<g class="shield-shell shield-${i+1}" data-shield="${i+1}">
     <path d="M${320-s.width/2} ${s.top}v${s.bottom-s.top}c0 55 ${s.width} 55 ${s.width} 0V${s.top}" fill="url(#${prefix}-steel)" stroke="#bbd0dc" stroke-width="2"/>
-    <ellipse cx="320" cy="${s.top}" rx="${s.width/2}" ry="30" fill="url(#${prefix}-steel)" stroke="#d8e4eb" stroke-width="3"/>
+    <ellipse cx="320" cy="${s.top}" rx="${s.width/2}" ry="28" fill="url(#${prefix}-copper)" stroke="#f0d39a" stroke-width="3"/>
     <path d="M${335-s.width/2} ${s.top+42}V${s.bottom-12}" stroke="#f0f6f8" opacity=".45" stroke-width="3"/>
     <text x="320" y="${(s.top+s.bottom)/2}" text-anchor="middle" fill="#274958" font-size="23">${s.label}</text>
   </g>`).join('')}
@@ -2215,20 +2290,102 @@ const SIGNAL_ROUTE = 'M220 45V680Q220 714 260 714H380Q420 714 420 680V45';
 return { COMPONENTS, CONNECTORS, SIGNAL_ROUTE };
 },
 17: () => {
+// src\features\installation\signal-test.js
+const { animate } = loadModule(12);
+const { COMPONENTS, CONNECTORS } = loadModule(16);
+
+/** 波包沿真实线路采样；衰减比例为可视化教学比例，不对应器件标称 dB。 */
+function createSignalTest(root,scene) {
+  const route=root.querySelector('#signal-travel'),length=route.getTotalLength();
+  const packet=root.querySelector('#signal-packet'),wave=packet.querySelector('path'),arrow=packet.querySelector('polygon');
+  function locate(component) {
+    let best=Infinity,distance=0;
+    for(let i=0;i<=1200;i++) {
+      const p=route.getPointAtLength(length*i/1200),error=Math.hypot(p.x-component.x,p.y-component.y);
+      if(error<best){best=error;distance=length*i/1200;}
+    }
+    return distance;
+  }
+  const components=COMPONENTS.map(c=>({...c,distance:locate(c)}));
+  const connectors=CONNECTORS.map(c=>({...c,distance:locate(c)}));
+  let run=null;
+  function properties(distance) {
+    let amplitude=1,highFrequency=true;
+    for(const c of components) {
+      if(c.distance>distance)continue;
+      if(c.kind==='attenuator')amplitude/=Math.sqrt(3);
+      if(c.kind==='filter')highFrequency=false;
+      if(c.kind==='amplifier')amplitude*=2;
+    }
+    return {amplitude,highFrequency};
+  }
+  animate(scene,(_,delta)=>{
+    if(!run)return;
+    const target=run.returning?run.returnTarget.distance:run.stop;
+    run.distance=run.returning?Math.max(target,run.distance-delta*260):Math.min(target,run.distance+delta*260);
+    const direction=run.returning?-1:1;
+    const {amplitude,highFrequency}=properties(run.distance);
+    packet.dataset.amplitude=amplitude.toFixed(3);packet.dataset.highFrequency=String(highFrequency);packet.dataset.direction=String(direction);
+    let d='';
+    for(let i=0;i<=100;i++) {
+      const behind=i*.625,s=Math.max(0,Math.min(run.stop,run.distance-direction*behind));
+      const p=route.getPointAtLength(s),before=route.getPointAtLength(Math.max(0,s-1)),after=route.getPointAtLength(Math.min(length,s+1));
+      const tangent=Math.atan2(after.y-before.y,after.x-before.x);
+      const oscillation=(Math.sin(behind*.12)+(highFrequency?.4*Math.sin(behind*.39):0))*Math.sin(i/100*Math.PI)*20*amplitude;
+      const x=p.x-Math.sin(tangent)*oscillation,y=p.y+Math.cos(tangent)*oscillation;
+      d+=(i?'L':'M')+x+' '+y;
+    }
+    wave.setAttribute('d',d);
+    const head=route.getPointAtLength(run.distance),previous=route.getPointAtLength(Math.max(0,Math.min(length,run.distance-direction*2)));
+    arrow.setAttribute('transform',`translate(${head.x} ${head.y}) rotate(${Math.atan2(head.y-previous.y,head.x-previous.x)*180/Math.PI})`);
+    route.style.strokeDashoffset=100*(1-run.distance/length);
+    if(run.distance===target) {
+      if(!run.returning && run.fault?.type==='direction') {
+        run.returning=true;
+        root.querySelector(`[data-slot="${run.fault.id}"]`).classList.add('fault');
+        root.querySelector('#link-feedback').textContent='方向错误：信号反向传播，将在上一个正确器件（'+run.returnTarget.name+'）处停止。';
+      } else {
+        const completed=run;run=null;packet.setAttribute('visibility','hidden');
+        if(completed.returning) {
+          root.querySelector(`[data-slot="${completed.returnTarget.id}"]`).classList.add('signal-stop');
+          packet.dataset.stoppedAt=completed.returnTarget.id;
+        }
+        completed.onComplete(completed.fault);
+      }
+    }
+  });
+  return (installed,reversed,broken,onComplete)=>{
+    const faults=[...connectors.filter(c=>broken.has(c.id)).map(c=>({...c,type:'link'})),
+      ...components.filter(c=>!installed.has(c.id)||reversed.has(c.id)).map(c=>({...c,type:installed.has(c.id)?'direction':'missing'}))].sort((a,b)=>a.distance-b.distance);
+    const fault=faults[0];
+    const returnTarget=fault?.type==='direction'
+      ? components.filter(c=>c.distance<fault.distance && installed.has(c.id) && !reversed.has(c.id)).at(-1)
+      : null;
+    root.querySelectorAll('.signal-stop').forEach(node=>node.classList.remove('signal-stop'));
+    delete packet.dataset.stoppedAt;
+    route.style.transition='none';packet.setAttribute('visibility','visible');
+    run={distance:0,stop:fault?fault.distance:length,fault,returnTarget,returning:false,onComplete};
+  };
+}
+
+return { createSignalTest };
+},
+18: () => {
 // src\features\cooling\index.js
 const { LEVELS } = loadModule(8);
-const { vacuumView } = loadModule(18);
-const { animate, randomBetween } = loadModule(12);
-const { mountDilution } = loadModule(23);
-const { pressureAt, ATM_MBAR } = loadModule(22);
-const { updatePressure, updateTemperatures } = loadModule(21);
+const { vacuumView } = loadModule(19);
+const { animate, randomBetween, shuffle } = loadModule(12);
+const { mountDilution } = loadModule(24);
+const { pressureAt, ATM_MBAR } = loadModule(23);
+const { updatePressure, updateTemperatures } = loadModule(22);
 function mount({
   root,
   scene,
   shell,
   beep,
   showToast,
-  awardLevel
+  awardLevel,
+  testStep = null
 }) {
   let misses = 0;
   function vacuum() {
@@ -2240,7 +2397,7 @@ function mount({
       vx: randomBetween(-21, 21),
       vy: randomBetween(-21, 21)
     }));
-    const leakPosition = [{
+    const leakPositions = shuffle([{
       x: 133,
       y: 110
     }, {
@@ -2249,8 +2406,9 @@ function mount({
     }, {
       x: 118,
       y: 460
-    }][Math.floor(Math.random() * 3)];
-    shell(LEVELS[2], 0, 2, '透视真空罐：抽走空气、修复随机漏点，再以节奏点击完成 4 K 预冷。', vacuumView(particles, leakPosition));
+    },{x:522,y:600}]).slice(0,1+Math.floor(Math.random()*4));
+    shell(LEVELS[2], 0, 2, '透视真空罐：修复 1–4 处随机漏点，再完成 4 K 预冷。', vacuumView(particles, leakPositions));
+    const unrepaired=new Set(leakPositions.map((_,index)=>index));
     let pumping = false,
       progress = 0,
       leaking = false,
@@ -2260,6 +2418,7 @@ function mount({
       hits = 0,
       beat = 0;
     let gasTemperature = 300;
+    let deepVacuum = 0, pulseStarted = false;
     const leakAt = randomBetween(2, 3.5);
     const nodes = [...root.querySelectorAll('[data-particle]')];
     updateTemperatures(root, Array(6).fill(300));
@@ -2269,22 +2428,23 @@ function mount({
       event.currentTarget.disabled = true;
       root.querySelector('#vacuum-status').textContent = 'PUMPING / 抽真空';
     });
-    const repair = () => {
-      if (!leaking) return;
-      leaking = false;
-      repaired = true;
-      root.querySelector('#vacuum-leak').setAttribute('opacity', '0');
-      root.querySelector('#vacuum-leak').setAttribute('pointer-events', 'none');
-      root.querySelector('#leak-stream').setAttribute('opacity', '0');
-      root.querySelector('#vacuum-message').textContent = '法兰密封已修复，压力继续下降。';
+    const repair = index => {
+      if (!leaking || !unrepaired.has(index)) return;
+      unrepaired.delete(index);
+      leaking=unrepaired.size>0;repaired=!leaking;
+      const node=root.querySelector(`[data-leak="${index}"]`);
+      node.setAttribute('opacity','0');node.setAttribute('pointer-events','none');
+      root.querySelector(`[data-leak-stream="${index}"]`).setAttribute('opacity','0');
+      root.querySelector('#vacuum-message').textContent = leaking?'还有 '+unrepaired.size+' 处漏点，请逐一修复。':'全部密封已修复，压力继续下降。';
       beep(680, .08);
     };
-    root.querySelector('#vacuum-leak').addEventListener('click', repair);
-    root.querySelector('#vacuum-leak').addEventListener('keydown', event => {
-      if (event.key === 'Enter') repair();
+    root.querySelectorAll('[data-leak]').forEach((node,index)=>{
+      node.addEventListener('click',()=>repair(index));
+      node.addEventListener('keydown',event=>{if(event.key==='Enter')repair(index);});
     });
     root.querySelector('#pulse-start').addEventListener('click', event => {
       pulse = true;
+      pulseStarted = true;
       event.currentTarget.disabled = true;
       root.querySelector('#cooling-tap').disabled = false;
       root.querySelector('#vacuum-status').textContent = 'PULSE TUBE / 预冷';
@@ -2314,9 +2474,8 @@ function mount({
         pumpElapsed += delta;
         if (!repaired && pumpElapsed > leakAt && !leaking) {
           leaking = true;
-          root.querySelector('#vacuum-leak').setAttribute('opacity', '1');
-          root.querySelector('#vacuum-leak').setAttribute('pointer-events', 'all');
-          root.querySelector('#leak-stream').setAttribute('opacity', '1');
+          root.querySelectorAll('[data-leak]').forEach(node=>{node.setAttribute('opacity','1');node.setAttribute('pointer-events','all');});
+          root.querySelectorAll('[data-leak-stream]').forEach(node=>node.setAttribute('opacity','1'));
           root.querySelector('#vacuum-message').textContent = '密封处漏气：空气正在涌入，请点击红色漏点。';
         }
         progress = Math.max(0, Math.min(1, progress + delta * (leaking ? -.025 : .105)));
@@ -2328,6 +2487,11 @@ function mount({
         }
       }
       const visible = Math.round((1 - progress) * 106) + 4;
+      if (pulseStarted) {
+        deepVacuum = Math.min(1, deepVacuum + delta / 10);
+        updatePressure(root, 10 ** (-2 - 2 * deepVacuum));
+        root.querySelector('#vacuum-message').textContent = '脉管预冷中继续抽气：气压从 10⁻² 降至 10⁻⁴ mbar。';
+      }
       particles.forEach((particle, index) => {
         particle.x += particle.vx * delta * Math.sqrt(gasTemperature / 300);
         particle.y += particle.vy * delta * Math.sqrt(gasTemperature / 300);
@@ -2338,6 +2502,7 @@ function mount({
         nodes[index].style.opacity = index < visible ? .7 : 0;
       });
       if (leaking) root.querySelectorAll('[data-air]').forEach((node, index) => {
+        const leakPosition=leakPositions[Number(node.parentElement.dataset.leakStream)];
         const t = (time * .7 + index / 9) % 1;
         node.setAttribute('cx', leakPosition.x + (leakPosition.x < 320 ? -75 + 135 * t : 75 - 135 * t));
         node.setAttribute('cy', leakPosition.y + Math.sin(t * 5 + index) * 12);
@@ -2349,30 +2514,38 @@ function mount({
       }
     });
     root.querySelector('#vacuum-finish').addEventListener('click', condense);
+    if(testStep==='precooling') {
+      progress=1;pumping=true;repaired=true;
+      updatePressure(root,1e-2);
+      root.querySelector('#pump-start').disabled=true;
+      root.querySelector('#pulse-start').disabled=false;
+      root.querySelector('#vacuum-message').textContent='测试预置：真空已达 10⁻² mbar，点击启动脉管制冷机。';
+    }
   }
   function condense() {
     mountDilution({
-      root, scene, beep, showToast,
+      root, scene, beep, showToast, testStep,
       render: view => shell(LEVELS[2], 1, 2, '打开手阀，建立氦循环；观察两相吸热和电子配对。', view),
       finish: () => awardLevel(3, {'真空与密封':100,'预冷节奏':Math.max(60,100-misses*5),'超导观察':100}, ['毫开尔文实验员'])
     });
   }
-  vacuum();
+  if(['condense','evaporation','pairing'].includes(testStep))condense();
+  else vacuum();
 }
 
 return { mount };
 },
-18: () => {
+19: () => {
 // src\features\cooling\views.js
-const { dilutionView } = loadModule(19);
+const { dilutionView } = loadModule(20);
 const { fridgeSvg } = loadModule(15);
-const { pressureInstrument, temperatureInstrument } = loadModule(21);
-function vacuumView(particles, leakPosition) {
+const { pressureInstrument, temperatureInstrument } = loadModule(22);
+function vacuumView(particles, leakPositions) {
   const overlay = `<g id="gas-particles">${particles.map((p, i) => `<circle data-particle="${i}" cx="${p.x}" cy="${p.y}" r="2.6" fill="#6ab8db" opacity=".7"/>`).join('')}</g>
- <g id="vacuum-leak" transform="translate(${leakPosition.x} ${leakPosition.y})" opacity="0" pointer-events="none" role="button" tabindex="0" aria-label="修复密封法兰漏点"><circle r="24" fill="#ef7359" fill-opacity=".15" stroke="#f16654" stroke-width="3"/><path d="M-8-8L8 8M-8 8L8-8" stroke="#f16654" stroke-width="4"/><text y="-33" text-anchor="middle" fill="#de533d" font-size="14">密封泄漏 · 点击修复</text></g>
- <g id="leak-stream" opacity="0">${Array.from({
+ ${leakPositions.map((leakPosition,index)=>`<g id="vacuum-leak${index?'-'+index:''}" data-leak="${index}" transform="translate(${leakPosition.x} ${leakPosition.y})" opacity="0" pointer-events="none" role="button" tabindex="0" aria-label="修复密封漏点 ${index+1}"><circle r="24" fill="#ef7359" fill-opacity=".15" stroke="#f16654" stroke-width="3"/><path d="M-8-8L8 8M-8 8L8-8" stroke="#f16654" stroke-width="4"/><text y="-33" text-anchor="middle" fill="#de533d" font-size="14">漏点 ${index+1} · 点击修复</text></g>
+ <g data-leak-stream="${index}" opacity="0">${Array.from({
     length: 9
-  }, (_, i) => `<circle data-air="${i}" r="3" fill="#ee7655"/>`).join('')}</g>`;
+  }, (_, i) => `<circle data-air="${i}" r="3" fill="#ee7655"/>`).join('')}</g>`).join('')}`;
   return `<div class="workbench"><div class="instrument-head"><div><span class="eyebrow">COOLDOWN / VACUUM & PULSE TUBE</span><h2>让空气离开，让温度下降。</h2></div><span id="vacuum-status" class="live-badge">300 K / ATMOSPHERE</span></div>
  <div class="bench-grid"><section class="viewport fridge-viewport">${fridgeSvg('cooldown', overlay)}
  <div class="viewport-caption">透视模式 · 粒子数量代表残余气体多少，不是实际分子数</div></section>
@@ -2388,9 +2561,9 @@ function condenseView() { return dilutionView(); }
 
 return { vacuumView, condenseView };
 },
-19: () => {
+20: () => {
 // src\features\cooling\dilution-view.js
-const { HELIUM, heliumDefinitions } = loadModule(20);
+const { HELIUM, heliumDefinitions } = loadModule(21);
 
 function dilutionView() {
   return `<div class="workbench"><div class="instrument-head"><span class="live-badge" id="condense-status">打开手阀</span></div>
@@ -2401,10 +2574,10 @@ function dilutionView() {
     <rect x="61" y="44" width="124" height="120" rx="17" fill="#102c40" stroke="#d3e5ed"/>
     <g id="tank-atoms" aria-label="初始混合气罐中的氦3与氦4原子"></g>
     <text x="122" y="24" text-anchor="middle" class="cycle-label">初始混合气罐</text>
-    <path id="supply-pipe" d="M122 170V210H250" fill="none" stroke="#738fa0" stroke-width="10"/>
+    <path id="supply-pipe" d="M122 170V210H250V470H310V525" fill="none" stroke="#738fa0" stroke-width="10"/>
     <g id="supply-atoms"></g>
     <path id="cycle-path" d="M550 265V100H250V470H310V525" fill="none" stroke="#467b8d" stroke-width="12" stroke-linejoin="round"/>
-    <path id="concentrated-liquid-pipe" d="M250 422V470H310V525" fill="none" stroke="#bc9434" stroke-width="8" opacity="0"/>
+    <path id="concentrated-liquid-pipe" d="M310 530V470H250V422" fill="none" stroke="#bc9434" stroke-width="8" opacity="0"/>
     <path id="extraction-path" d="M495 679H690V390H650" fill="none" stroke="#467b8d" stroke-width="12" stroke-linejoin="round"/>
     <path id="dilute-liquid-pipe" d="M495 679H690V390H650" fill="none" stroke="#9665c6" stroke-width="8" opacity="0"/>
     <path d="M250 320v65m0 0-10-15m10 15 10-15M490 460v-55m0 0-10 15m10-15 10 15" fill="none" stroke="#6fdccf" stroke-width="4"/>
@@ -2443,14 +2616,15 @@ function dilutionView() {
     <svg id="junction-surface" viewBox="30 0 680 190" aria-label="随机漂移电子与概率隧穿的 Cooper 对">
       <rect x="40" y="20" width="290" height="145" rx="10" fill="#4285a633"/><rect x="390" y="20" width="290" height="145" rx="10" fill="#4285a633"/><rect x="344" y="10" width="30" height="166" fill="#d4ae7977" stroke="#d8b276"/>
       <text x="184" y="188" text-anchor="middle" class="svg-label">电极</text><text x="360" y="188" text-anchor="middle" class="svg-label">绝缘层</text><text x="536" y="188" text-anchor="middle" class="svg-label">电极</text>
-      <g id="single-electrons">${Array.from({length:6},(_,i)=>`<g class="pair-electron" data-electron="${i}" data-spin="${i%2 ? -1:1}" role="button" tabindex="0" aria-label="电子 ${i+1}"><circle r="29" fill="transparent"/><circle r="20" fill="${i%2?'#a691df':'#4cbee0'}"/><text y="6" text-anchor="middle" fill="white" font-size="23">${i%2?'↓':'↑'}</text></g>`).join('')}</g><g id="cooper-pairs"></g>
+      <g id="single-electrons">${Array.from({length:10},(_,i)=>`<g class="pair-electron" data-electron="${i}" data-spin="${i%2 ? -1:1}" role="button" tabindex="0" aria-label="电子 ${i+1}"><circle r="25" fill="transparent"/><circle r="17" fill="${i%2?'#a691df':'#4cbee0'}"/><text y="6" text-anchor="middle" fill="white" font-size="23">${i%2?'↓':'↑'}</text></g>`).join('')}</g><g id="cooper-pairs"></g>
     </svg></div></section>
     <aside class="control-panel"><button id="gas-valve" class="primary">打开手阀面板</button><button id="condense-start" class="primary" disabled>开始冷凝</button>
-      <label class="range-control">蒸发室抽气速率 <output id="evap-output">0%</output><input id="evap-rate" type="range" min="0" max="100" value="0" disabled></label>
+      <label class="range-control evaporation-control">蒸发室抽气速率 <output id="evap-output">0%</output><span class="rate-window-guide">调至 ≤35 mK；松开并停止调节 2 秒后，点击进入电子配对</span><span class="rate-slider"><span class="rate-window" aria-hidden="true"></span><input id="evap-rate" type="range" min="0" max="100" step="0.1" value="0" disabled></span><span class="rate-window-caption">精调窗口两端 50 mK · 中间最低 10 mK</span></label>
+      <button id="enter-pairing" class="primary" disabled>进入电子配对 →</button>
       <div class="readout"><small>混合室温度</small><strong id="mix-readout">4000 mK</strong><span id="mix-message">手阀逆时针打开，准备初始充气。</span></div>
       <p id="pair-guide">金色液体：³He 富集相；紫色：稀释液。金色小球表示 ³He。</p>
       <button id="try-electrons" class="secondary">观察电子漂移</button><button id="cooling-finish" class="primary" disabled>进入超导态 →</button>
-      <p class="science-note">初始充气完成后气罐不持续供气。³He 在蒸发室优先蒸发，经泵回收和换热冷凝后返回；混合室中由浓相进入稀相吸热，产生毫开尔文制冷。单电子阻挡和随机配对隧穿是低能教学示意，不表示只有配对电子在任何条件下才能隧穿，也不以一次隧穿证明超导。</p>
+      <p class="science-note">液面按“混合室 → 管道 → 上方容器”依次显示，是简化教学动画，不代表真实装置通用的冷凝时序。初始充气完成后气罐不持续供气。³He 在蒸发室优先蒸发，经泵回收和换热冷凝后返回；混合室中由浓相进入稀相吸热，产生毫开尔文制冷。单电子阻挡和随机配对隧穿是低能教学示意，不表示只有配对电子在任何条件下才能隧穿，也不以一次隧穿证明超导。</p>
     </aside>
     <dialog id="valve-dialog" class="scene-sheet"><header><b>手动进气阀</b><button id="valve-close" aria-label="关闭手阀面板">✕</button></header><div class="sheet-content valve-panel">
       <svg viewBox="0 0 200 200" aria-label="旋转手阀"><circle cx="100" cy="100" r="72" fill="#224654" stroke="#71c7bc" stroke-width="12"/><g id="valve-wheel"><path d="M100 29v142M29 100h142" stroke="#bce7df" stroke-width="14"/><circle cx="100" cy="100" r="19" fill="#d6b074"/></g></svg>
@@ -2460,7 +2634,7 @@ function dilutionView() {
 
 return { dilutionView };
 },
-20: () => {
+21: () => {
 // src\features\cooling\helium-atoms.js
 const { randomBetween } = loadModule(12);
 
@@ -2537,7 +2711,7 @@ function createHeliumAnimation(root) {
       root.querySelector(id).style.opacity = flow ? '1' : '0';
     }
     for (const id of ['#circulating-atoms','#evaporation-dots']) {
-      root.querySelector(id).style.opacity = layers.separated ? '1' : '0';
+      root.querySelector(id).style.opacity = layers.upperFill > 0 ? '1' : '0';
     }
     root.querySelector('#supply-atoms').style.opacity = flow && liquid < 1 ? '1' : '0';
     root.querySelector('#still-atoms').style.opacity = layers.upperFill > .15 ? '1' : '0';
@@ -2602,18 +2776,18 @@ function createHeliumAnimation(root) {
 
 return { HELIUM, heliumDefinitions, createHeliumAnimation };
 },
-21: () => {
+22: () => {
 // src\features\cooling\instruments.js
 const { STAGES } = loadModule(15);
-const { ATM_MBAR, PULSE_START_MBAR, scientific, temperatureColor } = loadModule(22);
+const { ATM_MBAR, scientific, temperatureColor } = loadModule(23);
 
 function celsius(kelvin) {
   return (kelvin - 273.15).toFixed(2) + '°C';
 }
 
 function pressureInstrument() {
-  const ticks = [3, 2, 1, 0, -1, -2].map((exponent, index) => {
-    const angle = (-110 + index * 44) * Math.PI / 180;
+  const ticks = [3, 2, 1, 0, -1, -2, -3, -4].map((exponent, index) => {
+    const angle = (-110 + index * 220 / 7) * Math.PI / 180;
     const x = 90 + Math.sin(angle) * 65;
     const y = 85 - Math.cos(angle) * 65;
     return `<text x="${x}" y="${y + 4}" text-anchor="middle">10<tspan baseline-shift="super" font-size="9">${exponent}</tspan></text>`;
@@ -2646,7 +2820,7 @@ function temperatureInstrument() {
 }
 
 function updatePressure(root, pressure) {
-  const progress = Math.log(ATM_MBAR / pressure) / Math.log(ATM_MBAR / PULSE_START_MBAR);
+  const progress = Math.log(ATM_MBAR / pressure) / Math.log(ATM_MBAR / 1e-4);
   root.querySelector('#pressure-value').innerHTML = scientific(pressure) + ' <em>mbar</em>';
   root.querySelector('#pressure-atm').innerHTML = '（约 ' + scientific(pressure / ATM_MBAR) + ' 个大气压）';
   root.querySelector('#pressure-needle').setAttribute('transform', `rotate(${-110 + progress * 220} 90 85)`);
@@ -2667,14 +2841,16 @@ function updateTemperatures(root, temperatures) {
 
 return { celsius, pressureInstrument, temperatureInstrument, updatePressure, updateTemperatures };
 },
-22: () => {
+23: () => {
 // src\domain\cryogenics.js
 const ATM_MBAR = 1013.25;
 const PULSE_START_MBAR = 1e-2;
 
 function scientific(value) {
-  const exponent = Math.floor(Math.log10(value));
-  const coefficient = value / 10 ** exponent;
+  let exponent = Math.floor(Math.log10(value));
+  let coefficient = value / 10 ** exponent;
+  // 一位小数舍入为 10.0 时进位，避免显示非标准的 10.0 × 10ⁿ。
+  if (Number(coefficient.toFixed(1)) === 10) {coefficient=1;exponent++;}
   return `${coefficient.toFixed(1)} × 10<sup>${exponent}</sup>`;
 }
 
@@ -2689,26 +2865,49 @@ function temperatureColor(kelvin) {
 
 return { ATM_MBAR, PULSE_START_MBAR, scientific, pressureAt, temperatureColor };
 },
-23: () => {
+24: () => {
 // src\features\cooling\dilution.js
-const { animate, randomBetween } = loadModule(12);
-const { dilutionView } = loadModule(19);
-const { createHeliumAnimation } = loadModule(20);
-const { liquidState, updateLiquidLayers } = loadModule(24);
-const { createHeatFlow } = loadModule(25);
-const { celsius } = loadModule(21);
+const { animate } = loadModule(12);
+const { dilutionView } = loadModule(20);
+const { createHeliumAnimation } = loadModule(21);
+const { liquidState, updateLiquidLayers } = loadModule(25);
+const { createHeatFlow } = loadModule(26);
+const { celsius } = loadModule(22);
+const { evaporationTemperature } = loadModule(27);
+const { createCooperPairs } = loadModule(28);
 
-function mountDilution({ root, scene, render, beep, showToast, finish }) {
+function mountDilution({ root, scene, render, beep, showToast, finish, testStep = null }) {
   render(dilutionView());
   const updateHelium = createHeliumAnimation(root);
   const updateHeat = createHeatFlow(root);
+  const updatePairs = createCooperPairs({root,showToast,beep});
   const valve = root.querySelector('#valve-dialog');
   // 对话框脱离被收起的原始模板容器，保持单屏壳与原生 modal 的生命周期一致。
   root.querySelector('.workbench').append(valve);
   let opening = 0, turn = 0, flow = false, liquid = 0, rate = 0, temperature = 4000, ready = false;
-  let selected = null, tunnels = 0, exchangeElapsed = 0;
-  const motions = [];
-  const electrons = [...root.querySelectorAll('[data-electron]')].map((node, i) => ({ node, x:100+i%3*68, y:55+Math.floor(i/3)*70, vx:randomBetween(-9,9), vy:randomBetween(-7,7), paired:false }));
+  let idleElapsed = 0, pointerAdjusting = false, keyboardAdjusting = false;
+  const rateSlider=root.querySelector('#evap-rate');
+  const enterPairing=root.querySelector('#enter-pairing');
+  function resetIdle() { idleElapsed=0;enterPairing.disabled=true; }
+  function enterPairingStage() {
+    ready=true;root.querySelector('.workbench').dataset.phase='pairing';
+    enterPairing.disabled=true;
+    root.querySelector('#condense-status').textContent='低温达标 · 观察配对';
+    root.querySelector('#pair-guide').textContent='点同侧相反箭头配成 5 对；让其中 2 对成功隧穿。首次失败可能拆对，可重新配对。';
+  }
+  enterPairing.addEventListener('click',enterPairingStage);
+  scene.listen(rateSlider,'pointerdown',()=>{pointerAdjusting=true;resetIdle();});
+  for(const event of ['pointerup','pointercancel'])scene.listen(window,event,()=>{
+    if(pointerAdjusting){pointerAdjusting=false;resetIdle();}
+  });
+  const adjustmentKeys=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'];
+  scene.listen(rateSlider,'keydown',event=>{
+    if(adjustmentKeys.includes(event.key)){keyboardAdjusting=true;resetIdle();}
+  });
+  scene.listen(window,'keyup',event=>{
+    if(adjustmentKeys.includes(event.key)&&keyboardAdjusting){keyboardAdjusting=false;resetIdle();}
+  });
+  scene.listen(window,'blur',()=>{pointerAdjusting=false;keyboardAdjusting=false;resetIdle();});
   function openValve() { valve.showModal(); }
   root.querySelector('#gas-valve').addEventListener('click', openValve);
   root.querySelector('#hand-valve').addEventListener('click', openValve);
@@ -2729,27 +2928,10 @@ function mountDilution({ root, scene, render, beep, showToast, finish }) {
     flow=true; e.currentTarget.disabled=true; root.querySelector('#gas-valve').disabled=true;
     root.querySelector('#condense-status').textContent='初始充气与冷凝';
   });
-  root.querySelector('#evap-rate').addEventListener('input',e=>{rate=Number(e.target.value);root.querySelector('#evap-output').textContent=rate+'%';});
-  root.querySelector('#try-electrons').addEventListener('click',()=>showToast('电子一直在缓慢漂移；点击两个相反箭头组成一对。'));
-  electrons.forEach(electron => {
-    function pair() {
-      if(!ready || electron.paired) return;
-      if(!selected) { selected=electron;electron.node.classList.add('selected');return; }
-      if(selected===electron) return;
-      if(selected.node.dataset.spin===electron.node.dataset.spin) { showToast('请选择相反方向的箭头。');return; }
-      const partners=[selected,electron];
-      partners.forEach(e=>{e.paired=true;e.node.classList.remove('selected');e.node.classList.add('paired');});
-      selected=null;
-      const node=document.createElementNS('http://www.w3.org/2000/svg','g');
-      node.innerHTML='<circle cx="-11" r="13" fill="#53d3da"/><circle cx="11" r="13" fill="#b79bdd"/><path d="M-11 0H11" stroke="#bcffe6" stroke-width="4"/>';
-      root.querySelector('#cooper-pairs').append(node);
-      motions.push({node,partners,start:performance.now()/1000,y:randomBetween(48,135),pass:Math.random()<.65,done:false});
-      root.querySelector('#pair-status').textContent='Cooper 对靠近势垒…';
-      beep(670,.06);
-    }
-    electron.node.addEventListener('click',pair);
-    electron.node.addEventListener('keydown',e=>{if(e.key==='Enter')pair();});
+  rateSlider.addEventListener('input',e=>{
+    rate=Number(e.target.value);root.querySelector('#evap-output').textContent=rate+'%';resetIdle();
   });
+  root.querySelector('#try-electrons').addEventListener('click',()=>showToast('电子一直在缓慢漂移；点击两个相反箭头组成一对。'));
   animate(scene,(time,delta)=>{
     if(turn && !flow) {
       opening=Math.max(0,Math.min(100,opening+turn*delta*35));
@@ -2759,72 +2941,66 @@ function mountDilution({ root, scene, render, beep, showToast, finish }) {
       root.querySelector('#mix-message').textContent=opening>=70?'手阀已打开，关闭面板后开始冷凝。':'逆时针开阀到 70% 以上。';
     }
     if(flow) {
-      if(liquid === 1 && rate > 0) exchangeElapsed += delta;
       liquid=Math.min(1,liquid+delta*.12);
       if(liquid===1) {
         root.querySelector('#evap-rate').disabled=false;
         if(!ready) {
           root.querySelector('#condense-status').textContent='闭合循环 · 气罐停止供气';
-          root.querySelector('#mix-message').textContent='抽气调至约 70%，观察 ³He 跨相吸热。';
+          root.querySelector('#mix-message').textContent='调至 ≤35 mK，松开滑块并停止调节 2 秒，再点击进入电子配对。';
         }
       }
-      const target=liquid<1?4000*(700/4000)**Math.min(1,liquid/.35):rate>0?10+Math.abs(rate-70)*4:700;
+      const target=liquid<1?4000*(700/4000)**Math.min(1,liquid/.35):rate>0?evaporationTemperature(rate):700;
       temperature+=(target-temperature)*Math.min(1,delta*1.8);
       if(Math.abs(temperature-target)<.4)temperature=target;
       root.querySelector('#mixing-heat').style.opacity=rate>0?String(.4+.6*Math.sin(time*2)**2):'.15';
       root.querySelector('#mix-temperature').textContent=temperature.toFixed(0)+' mK';
       root.querySelector('#mix-celsius').textContent=celsius(temperature/1000);
       root.querySelector('#mix-readout').textContent=temperature.toFixed(0)+' mK';
-      if(temperature<=10.5 && exchangeElapsed >= 9 && !ready) {
-        ready=true;root.querySelector('.workbench').dataset.phase='pairing';
-        root.querySelector('#condense-status').textContent='10 mK · 观察配对';
-        root.querySelector('#pair-guide').textContent='点击相反箭头配对；未穿过的电子可以再次尝试。';
+      if(!ready) {
+        idleElapsed=liquid===1&&!pointerAdjusting&&!keyboardAdjusting?idleElapsed+delta:0;
+        const canContinue=liquid===1&&temperature<=35&&idleElapsed>=2;
+        if(enterPairing.disabled===canContinue)enterPairing.disabled=!canContinue;
+        if(canContinue)root.querySelector('#mix-message').textContent='低温达标，可继续观察循环，或点击“进入电子配对”。';
       }
     }
     const layers = liquidState(liquid, temperature);
     if (flow && liquid < 1) {
-      root.querySelector('#condense-status').textContent = layers.separated ? '已分层 · 蒸发回收启动' : '混合室充注 · 液面上升';
+      root.querySelector('#condense-status').textContent = layers.upperFill>0 ? '管道已满 · 上方液面上升' : layers.pipeFill>0 ? '液体逐渐填充连接管道' : '混合室充注 · 液面上升';
       root.querySelector('#mix-message').textContent = '冷凝充注 ' + Math.round(liquid * 100) + '% · 观察液面和红色热量球。';
     }
     updateLiquidLayers(root, layers, liquid);
     updateHelium({ time, delta, flow, liquid, rate, layers });
     updateHeat({delta, flow, temperature, surface:layers.surface});
-    electrons.forEach(e=>{
-      if(e.paired)return;
-      e.vx=Math.max(-12,Math.min(16,e.vx+randomBetween(-7,7)*delta));
-      e.vy=Math.max(-12,Math.min(12,e.vy+randomBetween(-9,9)*delta));
-      e.x+=(e.vx+5)*delta;e.y+=e.vy*delta;
-      if(e.x>310){e.x=310;e.vx=-14;}if(e.x<70){e.x=70;e.vx=5;}
-      if(e.y<43||e.y>140){e.y=Math.max(43,Math.min(140,e.y));e.vy*=-1;}
-      e.node.setAttribute('transform',`translate(${e.x} ${e.y})`);
-    });
-    motions.forEach(pair=>{
-      if(pair.done)return;
-      const t=Math.min(1,(time-pair.start)/3.2);
-      const x=pair.pass?180+390*t:180+145*Math.sin(t*Math.PI);
-      pair.node.setAttribute('transform',`translate(${x} ${pair.y})`);
-      if(t===1){
-        pair.done=true;
-        if(pair.pass){tunnels++;root.querySelector('#pair-status').textContent=`已观察 ${tunnels} 次成对隧穿`;}
-        else {pair.node.remove();pair.partners.forEach(e=>{e.paired=false;e.x=randomBetween(90,240);e.node.classList.remove('paired');});root.querySelector('#pair-status').textContent='这对被反射了，可以重新配对';}
-        if(tunnels>=1)root.querySelector('#cooling-finish').disabled=false;
-      }
-    });
+    updatePairs(delta,ready);
   });
   root.querySelector('#cooling-finish').addEventListener('click',finish);
+  if(testStep==='pairing'||testStep==='evaporation') {
+    opening=100;flow=true;liquid=1;
+    ready=testStep==='pairing';rate=ready?70:0;temperature=ready?10:700;
+    root.querySelector('#gas-valve').disabled=true;
+    root.querySelector('#condense-start').disabled=true;
+    root.querySelector('#evap-rate').disabled=false;
+    root.querySelector('#evap-rate').value=rate;
+    root.querySelector('#evap-output').textContent=rate+'%';
+    if(ready) {
+      enterPairingStage();
+    }
+  }
 }
 
 return { mountDilution };
 },
-24: () => {
+25: () => {
 // src\features\cooling\liquid-state.js
 /** 液面使用同一坐标模型，避免容器、原子和管道各自计算而错位。 */
 function liquidState(fill, temperature) {
   const separated = fill >= .5 && temperature < 870;
-  const height = 194 * fill;
+  const height = 194 * Math.min(1, fill / .6);
   const surface = 724 - height;
   const diluteHeight = separated ? height * 109 / 194 : 0;
-  const upperFill = separated ? Math.min(1, (fill - .5) * 2) : 0;
+  // 前 60% 到达管口，随后 20% 填管，最后 20% 抬升上方容器液面。
+  const pipeFill = Math.max(0, Math.min(1, (fill - .6) / .2));
+  const upperFill = separated ? Math.max(0, Math.min(1, (fill - .8) / .2)) : 0;
   return {
     separated,
     height,
@@ -2832,6 +3008,7 @@ function liquidState(fill, temperature) {
     boundary: 724 - diluteHeight,
     diluteHeight,
     upperFill,
+    pipeFill,
     upperSurface: 422 - 71 * upperFill
   };
 }
@@ -2855,14 +3032,17 @@ function updateLiquidLayers(root, state, fill) {
     node.setAttribute('opacity', state.upperFill > 0 ? '1' : '0');
   }
   for (const id of ['#concentrated-liquid-pipe','#dilute-liquid-pipe']) {
-    root.querySelector(id).setAttribute('opacity', String(state.upperFill));
+    const pipe = root.querySelector(id);
+    pipe.setAttribute('opacity', state.pipeFill > 0 ? '1' : '0');
+    pipe.setAttribute('pathLength','100');
+    pipe.setAttribute('stroke-dasharray',`${state.pipeFill * 100} 100`);
   }
   root.querySelector('#mixture-surface').dataset.liquidPhase = state.separated ? 'separated' : 'filling';
 }
 
 return { liquidState, updateLiquidLayers };
 },
-25: () => {
+26: () => {
 // src\features\cooling\heat-flow.js
 /** 红球仅表示热量，频率由冷却进度控制，稳定后仍保留热流。 */
 function createHeatFlow(root) {
@@ -2897,23 +3077,126 @@ function createHeatFlow(root) {
 
 return { createHeatFlow };
 },
-26: () => {
+27: () => {
+// src\features\cooling\evaporation-rate.js
+/** 教学速率窗口：50～90 为精调区，中心 70 最冷，边缘恰为 50 mK。 */
+function evaporationTemperature(rate) {
+  const distance = Math.abs(rate - 70);
+  if (distance <= 20) return 10 + 2 * distance;
+  return 50 + 2 * (distance - 20) + .22 * (distance - 20) ** 2;
+}
+
+return { evaporationTemperature };
+},
+28: () => {
+// src\features\cooling\cooper-pairs.js
+const { randomBetween } = loadModule(12);
+
+function tunnelEncounter(firstEncounter, random = Math.random) {
+  const pass = random() < .65;
+  return {pass, split: !pass && firstEncounter && random() < .5};
+}
+
+/** 五对电子的持续运动；仅首次碰壁失败有拆对机会，通关统计不同的成功电子对。 */
+function createCooperPairs({root,showToast,beep}) {
+  let selected = null, enabled = false, successes = 0;
+  const pairs = [];
+  const electrons = [...root.querySelectorAll('[data-electron]')].map((node,i) => ({
+    node, x:80+i%5*48, y:55+Math.floor(i/5)*65,
+    vx:randomBetween(-6,8), vy:randomBetween(-6,6), paired:false
+  }));
+  function status(message) {
+    root.querySelector('#pair-status').textContent = `${message} · ${successes}/2 对成功`;
+  }
+  electrons.forEach(electron => {
+    function choose() {
+      if (!enabled || electron.paired) return;
+      if (!selected) {selected=electron;electron.node.classList.add('selected');return;}
+      if (selected===electron) {selected=null;electron.node.classList.remove('selected');return;}
+      if (selected.node.dataset.spin===electron.node.dataset.spin) {showToast('请选择箭头相反的电子。');return;}
+      if ((selected.x<350)!==(electron.x<350)) {showToast('请在同一侧电极中选择电子。');return;}
+      const partners=[selected,electron];
+      const node=document.createElementNS('http://www.w3.org/2000/svg','g');
+      node.innerHTML='<circle cx="-11" r="13" fill="#53d3da"/><circle cx="11" r="13" fill="#b79bdd"/><path d="M-11 0H11" stroke="#bcffe6" stroke-width="4"/>';
+      root.querySelector('#cooper-pairs').append(node);
+      pairs.push({node,partners,x:(selected.x+electron.x)/2,y:(selected.y+electron.y)/2,
+        vx:selected.x<350?55:-55,vy:randomBetween(-9,9),firstEncounter:true,crossing:false,counted:false,removed:false});
+      partners.forEach(e=>{e.paired=true;e.node.classList.remove('selected');e.node.classList.add('paired');});
+      selected=null;status('配对成功，观察势垒');beep(670,.06);
+    }
+    electron.node.addEventListener('click',choose);
+    electron.node.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();choose();}});
+  });
+  function split(pair) {
+    pair.removed=true;pair.node.remove();
+    pair.partners.forEach((e,i)=>{
+      e.paired=false;e.x=pair.x+(i?15:-15);e.y=pair.y+(i?12:-12);
+      e.vx=pair.x<350?-8:8;e.node.classList.remove('paired');
+    });
+    status('首次隧穿失败，已拆对，可重新配对');
+  }
+  return function update(delta,ready) {
+    enabled=ready;
+    electrons.forEach(e=>{
+      if(e.paired)return;
+      const left=e.x<350, min=left?65:415, max=left?310:650;
+      e.vx=Math.max(-12,Math.min(12,e.vx+randomBetween(-5,5)*delta));
+      e.x+=(e.vx+(left?4:-4))*delta;e.y+=e.vy*delta;
+      if(e.x<min||e.x>max){e.x=Math.max(min,Math.min(max,e.x));e.vx=e.x===min?10:-10;}
+      if(e.y<43||e.y>140){e.y=Math.max(43,Math.min(140,e.y));e.vy*=-1;}
+      e.node.setAttribute('transform',`translate(${e.x} ${e.y})`);
+    });
+    pairs.forEach(pair=>{
+      if(pair.removed)return;
+      const previous=pair.x;
+      pair.x+=pair.vx*delta;pair.y+=pair.vy*delta;
+      if(pair.y<43||pair.y>140){pair.y=Math.max(43,Math.min(140,pair.y));pair.vy*=-1;}
+      if(pair.x<70||pair.x>645){pair.x=Math.max(70,Math.min(645,pair.x));pair.vx*=-1;}
+      const encounter=!pair.crossing && ((previous<=310&&pair.x>=310&&pair.vx>0)||(previous>=410&&pair.x<=410&&pair.vx<0));
+      if(encounter){
+        const {pass,split:breakPair}=tunnelEncounter(pair.firstEncounter);
+        if(pass) pair.crossing=true;
+        else {
+          pair.x=pair.vx>0?309:411;pair.vx*=-1;
+          if(breakPair)split(pair);
+          else status('被反射，保持配对继续运动');
+        }
+        pair.firstEncounter=false;
+      }
+      if(pair.crossing&&((pair.vx>0&&pair.x>410)||(pair.vx<0&&pair.x<310))){
+        pair.crossing=false;
+        if(!pair.counted){pair.counted=true;successes++;}
+        status('成对隧穿成功，继续运动');
+        root.querySelector('#cooling-finish').disabled=successes<2;
+      }
+      pair.node.setAttribute('transform',`translate(${pair.x} ${pair.y})`);
+    });
+  };
+}
+
+return { tunnelEncounter, createCooperPairs };
+},
+29: () => {
 // src\features\control\index.js
 const { LEVELS } = loadModule(8);
-const { controlView, circuitSvg } = loadModule(27);
-const { mountCalibration } = loadModule(29);
-const { mountNoiseDefense } = loadModule(34);
-const { zeroState, runCircuit, applyOperation, reducedBloch, fidelity } = loadModule(31);
-const { updateBloch } = loadModule(28);
+const { controlView, circuitSvg } = loadModule(30);
+const { mountCalibration } = loadModule(32);
+const { mountNoiseDefense } = loadModule(38);
+const { zeroState, runCircuit, applyOperation, reducedBloch, fidelity } = loadModule(39);
+const { updateBloch } = loadModule(31);
+const { createGateTrajectories } = loadModule(40);
 
 function mount(context) {
   const {root,scene,shell,showToast,beep,awardLevel,experiment}=context;
-  mountCalibration(context,startCircuit);
+  if(context.testStep==='circuit'||context.testStep==='protection')startCircuit(100);
+  else mountCalibration(context,startCircuit);
   function startCircuit(calibrationAccuracy) {
     shell(LEVELS[3],1,2,'多选量子比特编排单比特门；运行后点掉靠近球的干扰，坚持 8 秒。',controlView());
     let selected=new Set([0]), circuit=[], pendingGate=null, control=null, running=false, finished=false, noise=0;
     let ideal=zeroState(), displayedStep=-1;
     const spheres=[...root.querySelectorAll('.qubit-unit')];
+    const trajectories=createGateTrajectories(spheres);
+    let purePlayback=false;
     function paintSelection() {
       root.querySelectorAll('[data-qubit-select],[data-editor-qubit]').forEach(node=>{
         const q=Number(node.dataset.qubitSelect ?? node.dataset.editorQubit);
@@ -2948,6 +3231,14 @@ function mount(context) {
       root.querySelector('#circuit-diagram').style.minWidth=drawing.width+'px';
       root.querySelector('#operation-list').textContent=circuit.map((op,i)=>(i+1)+'. '+op.gate+' '+(op.targets?op.targets.map(q=>'Q'+q).join('、'):'Q'+op.control+'→Q'+op.target)).join(' / ');
       root.querySelector('#run-algorithm').disabled=!circuit.length||running||finished;
+      if(!running&&!finished){
+        const preview=runCircuit(circuit);
+        spheres.forEach((sphere,q)=>{
+          const vector=reducedBloch(preview,q);
+          updateBloch(sphere.querySelector('svg'),vector);
+          root.querySelector('[data-qubit-state="'+q+'"]').textContent=vector.z>.999?'|0⟩':vector.z<-.999?'|1⟩':'P(1) '+Math.round((1-vector.z)*50)+'%';
+        });
+      }
       links();
     }
     function append(operation) {
@@ -2965,49 +3256,82 @@ function mount(context) {
     root.querySelector('#clear-circuit').addEventListener('click',()=>{circuit=[];pendingGate=null;control=null;paintSelection();draw();});
     root.querySelector('#ghz-example').addEventListener('click',()=>{circuit=[{gate:'H',targets:[0]},...[1,2,3,4].map(target=>({gate:'CNOT',control:0,target}))];draw();});
     draw();
+    root.querySelector('#run-algorithm').textContent='进入保护关 →';
     const defense=mountNoiseDefense({root,scene,beep,onFrame(progress,damage){
       noise=damage;
       const position=progress*circuit.length,step=Math.min(circuit.length-1,Math.floor(position));
       const base=circuit.slice(0,step).reduce((state,op)=>applyOperation(state,op),zeroState());
-      const actual=applyOperation(base,circuit[step],progress===1?1:position-step);
+      const fraction=progress===1?1:position-step;
+      const actual=applyOperation(base,circuit[step],fraction);
       spheres.forEach((sphere,q)=>{const vector=reducedBloch(actual,q,noise);updateBloch(sphere.querySelector('svg'),vector);root.querySelector('[data-qubit-state="'+q+'"]').textContent='P(1) '+Math.round((1-vector.z)*50)+'%';});
-      if(step!==displayedStep){draw(step);displayedStep=step;}
+      if(step!==displayedStep){
+        if(purePlayback){
+          trajectories.prepare(base,circuit[step]);
+          root.querySelector('#processor-status').textContent=`纯享 · 第 ${step+1}/${circuit.length} 层 · ${circuit[step].gate}`;
+        }
+        draw(step);displayedStep=step;
+      }
+      if(purePlayback)trajectories.update(fraction,actual);
     },onFinish(damage,cleared){
       noise=damage;running=false;finished=true;
       experiment.save({circuit,ideal,actual:ideal,noise,calibrationAccuracy,protectionScore:Math.round((1-noise)*100),stateFidelity:fidelity(ideal,ideal,noise),createdAt:Date.now()});
       root.querySelector('#algorithm-result').hidden=false;
       root.querySelector('#processor-status').textContent='演算完成';
-      root.querySelector('#algorithm-summary').textContent='已保护 8 秒 · 清除 '+cleared+' 个干扰';
+      root.querySelector('#algorithm-summary').textContent=purePlayback?'无噪声演示完成 · 已执行当前电路':'已保护 8 秒 · 清除 '+cleared+' 个干扰';
+      trajectories.clear();
       root.querySelector('.workbench').dataset.phase='complete';
     }});
     root.querySelector('#run-algorithm').addEventListener('click',()=>{
-      running=true;ideal=runCircuit(circuit);
-      root.querySelector('.workbench').dataset.phase='running';
+      ideal=runCircuit(circuit);
+      root.querySelector('.workbench').dataset.phase='ready';
       root.querySelectorAll('.circuit-editor button').forEach(b=>b.disabled=true);
       root.querySelector('#run-algorithm').disabled=true;
-      root.querySelector('#processor-status').textContent='点掉来袭干扰 · 保护 8 秒';
-      defense.start();
+      root.querySelector('#protection-start').hidden=false;
+      root.querySelector('#processor-status').textContent='准备好后点击开始保护 · 点掉来袭干扰';
     });
-    root.querySelector('#control-finish').addEventListener('click',()=>awardLevel(4,{'微波校准':calibrationAccuracy,'门操作':100,'量子态保真度':Math.round(fidelity(ideal,ideal,noise)*100)},noise===0?['五比特量子守卫']:[]));
+    function replay(withoutNoise) {
+      purePlayback=withoutNoise;
+      trajectories.clear();
+      running=true;finished=false;noise=0;displayedStep=-1;
+      root.querySelector('#algorithm-result').hidden=true;
+      root.querySelector('.workbench').dataset.phase='running';
+      root.querySelector('.workbench').dataset.playback=purePlayback?'pure':'defense';
+      root.querySelector('#protection-start').textContent='再来一次';
+      root.querySelector('#pure-playback').hidden=false;
+      root.querySelector('.mission span').textContent=purePlayback
+        ? '金色虚线表示当前门尚未走过的轨迹，走过即消失。纠缠时，单个比特的状态可能进入球内。'
+        : '点击从四周靠近量子比特的噪声，保护 8 秒；点击“再来一次”可重置本次演算。';
+      root.querySelector('#processor-status').textContent=purePlayback?'无噪声 · 虚线为当前门尚未走过的轨迹':'点掉来袭干扰 · 保护 8 秒';
+      defense.start({withNoise:!purePlayback});
+    }
+    root.querySelector('#protection-start').addEventListener('click',()=>replay(false));
+    root.querySelector('#pure-playback').addEventListener('click',()=>replay(true));
+    root.querySelector('#control-finish').addEventListener('click',()=>awardLevel(4,{'微波校准':calibrationAccuracy,'门操作':100,'量子态保真度':Math.round(fidelity(ideal,ideal,noise)*100)},noise===0&&!purePlayback?['五比特量子守卫']:[]));
+    if(context.testStep==='protection') {
+      root.querySelector('#ghz-example').click();
+      root.querySelector('#run-algorithm').click();
+    }
   }
 }
 
 return { mount };
 },
-27: () => {
+30: () => {
 // src\features\control\views.js
-const { blochSvg } = loadModule(28);
+const { blochSvg } = loadModule(31);
 function controlView() {
   return `<div class="workbench control-workbench"><div class="instrument-head"><span id="processor-status" class="live-badge">编排电路</span></div>
     <div id="processor-field"><div class="qubit-array">${Array.from({length:5},(_,i)=>`<button class="qubit-unit ${i===0?'selected':''}" data-qubit-select="${i}"><div class="qubit-unit-label"><b>Q${i}</b><span>量子比特</span></div>${blochSvg('q'+i,'Q'+i)}<small data-qubit-state="${i}">|0⟩</small><div class="qubit-health" aria-label="Q${i} 完整度"><i data-health="${i}" style="width:100%"></i></div></button>`).join('')}</div>
     <svg id="entanglement-links" aria-hidden="true"></svg><div class="live-circuit"><svg id="live-circuit" viewBox="0 0 900 230" aria-label="当前量子门线路"></svg></div><div id="noise-layer"></div></div>
     <div class="processor-hud"><span>剩余 <b id="algorithm-progress">8.0 秒</b></span><span>保护 <b id="protection-score">100%</b></span><span>清除 <b id="noise-cleared">0</b></span></div>
-    <section class="circuit-editor" aria-label="量子门编排"><div class="editor-qubits">${Array.from({length:5},(_,i)=>`<button class="editor-qubit ${i===0?'selected':''}" data-editor-qubit="${i}">Q${i}</button>`).join('')}</div>
-      <p id="gate-instruction">可多选，对选中的量子比特同时施加单比特门。</p>
+    <section class="circuit-editor" aria-label="量子门编排">
+      <p id="gate-instruction">点击上方球多选，再点量子门；每加一层，球立即预览结果。</p>
       <div class="gate-bank">${['X','Y','Z','H','S','CNOT','CZ'].map(g=>`<button class="gate-button" data-gate="${g}">${g}</button>`).join('')}</div>
       <div class="circuit-scroll"><svg id="circuit-diagram" viewBox="0 0 900 230" aria-label="自定义并行量子电路"></svg></div><div id="operation-list"></div>
       <div class="workbench-actions"><button id="undo-operation" class="secondary">撤销</button><button id="clear-circuit" class="secondary">清空</button><button id="ghz-example" class="secondary">载入纠缠示例</button><button id="run-algorithm" class="primary" disabled>运行 · 保护 8 秒</button></div>
     </section>
+    <button id="protection-start" class="primary" hidden>开始保护</button>
+    <button id="pure-playback" class="secondary" hidden>无噪声纯享版</button>
     <div id="algorithm-result" class="experiment-result" hidden><p id="algorithm-summary"></p><button id="control-finish" class="primary">开始量子分析 →</button></div>
     <p class="science-note">多选单比特门在同一电路时间步执行。连接光线表示双比特操作关系，不代表任意输入都已产生纠缠。噪声图标是交互隐喻，血量不是硬件物理量；损伤通过简化退极化参数影响测量分布。</p></div>`;
 }
@@ -3024,32 +3348,45 @@ function circuitSvg(circuit, active=-1) {
 
 return { controlView, circuitSvg };
 },
-28: () => {
+31: () => {
 // src\ui\bloch.js
-const project = ({
-  x,
-  y,
-  z
-}) => ({
-  x: 110 + 70 * x + 27 * y,
-  y: 110 - 73 * z - 20 * y
-});
+const azimuth = 20 * Math.PI / 180;
+const elevation = 20 * Math.PI / 180;
+/** 正交投影：屏幕基向量互相垂直且长度为 1，单位球不会投到轮廓外。 */
+function projectBloch({x,y,z}) {
+  return {
+    x:110+76*(Math.cos(azimuth)*x+Math.sin(azimuth)*y),
+    y:110+76*(Math.sin(azimuth)*Math.sin(elevation)*x-Math.cos(azimuth)*Math.sin(elevation)*y-Math.cos(elevation)*z)
+  };
+}
+function gridCircle(plane) {
+  return Array.from({length:97},(_,i)=>{
+    const angle=i*Math.PI/48, a=Math.cos(angle),b=Math.sin(angle);
+    const point=projectBloch(plane==='xy'?{x:a,y:b,z:0}:plane==='xz'?{x:a,y:0,z:b}:{x:0,y:a,z:b});
+    return `${i?'L':'M'}${point.x} ${point.y}`;
+  }).join(' ')+' Z';
+}
 function blochSvg(id, label = 'Q0') {
+  const north=projectBloch({x:0,y:0,z:1});
+  const axes=[{x:1,y:0,z:0},{x:0,y:1,z:0},{x:0,y:0,z:1}].map(vector=>{
+    const point=projectBloch({x:vector.x*1.16,y:vector.y*1.16,z:vector.z*1.16});
+    return `M${220-point.x} ${220-point.y}L${point.x} ${point.y}`;
+  }).join(' ');
+  const xLabel=projectBloch({x:1.25,y:0,z:0}),yLabel=projectBloch({x:0,y:1.25,z:0});
   return `<svg class="bloch-sphere" viewBox="0 0 220 220" data-bloch="${id}" aria-label="${label} Bloch 球">
    <defs><radialGradient id="sphere-${id}" cx=".3" cy=".25"><stop stop-color="#318fac" stop-opacity=".22"/><stop offset="1" stop-color="#071b30" stop-opacity=".7"/></radialGradient></defs>
    <circle cx="110" cy="110" r="76" fill="url(#sphere-${id})" stroke="#356982"/>
-   <ellipse cx="110" cy="110" rx="76" ry="26" fill="none" stroke="#32728a" stroke-dasharray="3 4"/>
-   <ellipse cx="110" cy="110" rx="25" ry="76" fill="none" stroke="#284b66"/>
-   <path d="M20 110H202 M110 20V200 M65 143L156 77" stroke="#315975" stroke-width="1"/>
+   ${['xy','xz','yz'].map(plane=>`<path d="${gridCircle(plane)}" fill="none" stroke="#32728a" stroke-dasharray="3 4"/>`).join('')}
+   <path d="${axes}" stroke="#315975" stroke-width="1"/>
    <line class="rotation-axis" x1="40" y1="110" x2="180" y2="110" stroke="#f5b964" stroke-width="2" stroke-dasharray="5 4" opacity=".6"/>
-   <line class="state-vector" x1="110" y1="110" x2="110" y2="37" stroke="#6ef1e0" stroke-width="3"/>
-   <circle class="state-dot" cx="110" cy="37" r="5" fill="#d4fffb"/>
+   <line class="state-vector" x1="110" y1="110" x2="${north.x}" y2="${north.y}" stroke="#6ef1e0" stroke-width="3"/>
+   <circle class="state-dot" cx="${north.x}" cy="${north.y}" r="5" fill="#d4fffb"/>
    <circle cx="110" cy="110" r="3" fill="#6ef1e0"/>
-   <text x="113" y="18">|0⟩</text><text x="112" y="216">|1⟩</text><text x="201" y="104">x</text><text x="159" y="75">y</text>
+   <text x="113" y="18">|0⟩</text><text x="112" y="216">|1⟩</text><text x="${xLabel.x}" y="${xLabel.y}">x</text><text x="${yLabel.x}" y="${yLabel.y}">y</text>
  </svg>`;
 }
-function updateBloch(svg, vector, phase = 0) {
-  const end = project(vector);
+function updateBloch(svg, vector, phase = 0, rotationAxis = null) {
+  const end = projectBloch(vector);
   const line = svg.querySelector('.state-vector'),
     dot = svg.querySelector('.state-dot');
   line.setAttribute('x2', end.x);
@@ -3057,7 +3394,7 @@ function updateBloch(svg, vector, phase = 0) {
   dot.setAttribute('cx', end.x);
   dot.setAttribute('cy', end.y);
   const axis = svg.querySelector('.rotation-axis');
-  const a = project({
+  const a = projectBloch(rotationAxis || {
     x: Math.cos(phase),
     y: Math.sin(phase),
     z: 0
@@ -3069,98 +3406,289 @@ function updateBloch(svg, vector, phase = 0) {
   svg.dataset.purity = ((1 + vector.x ** 2 + vector.y ** 2 + vector.z ** 2) / 2).toFixed(3);
 }
 
-return { blochSvg, updateBloch };
+return { projectBloch, blochSvg, updateBloch };
 },
-29: () => {
+32: () => {
 // src\features\control\calibration.js
 const { LEVELS } = loadModule(8);
-const { calibrationView } = loadModule(30);
-const { zeroState, rotate, reducedBloch, applyOperation } = loadModule(31);
-const { updateBloch } = loadModule(28);
+const { calibrationView } = loadModule(33);
+const { updateBloch } = loadModule(31);
 const { animate } = loadModule(12);
-const { clamp } = loadModule(32);
-const { RESONANCE_MHZ, detuningFromSlider, detuningLabel } = loadModule(33);
+const { clamp } = loadModule(34);
+const { RESONANCE_MHZ, detuningFromSlider, detuningLabel } = loadModule(35);
+const { createBlochTrail } = loadModule(36);
+const { driveAxis, rotateVector } = loadModule(37);
 
 function mountCalibration({root,scene,shell},onComplete) {
-  shell(LEVELS[3],0,2,'调节幅度、时长和延时，让青色波形贴合黄色参考，再发送微波。',calibrationView());
-  const canvas=root.querySelector('#pulse-canvas'), ctx=canvas.getContext('2d');
-  const input=id=>Number(root.querySelector(id).value);
-  let running=false,state=zeroState(),elapsed=0,match=0;
-  function draw(time,detuning) {
-    const amplitude=input('#amplitude')/100, duration=input('#duration'), delay=input('#pulse-delay');
-    const frequency=RESONANCE_MHZ+detuning, phase=input('#microwave-phase');
-    root.querySelector('#amplitude-value').textContent=Math.round(amplitude*100)+'%';
-    root.querySelector('#duration-value').textContent=duration+' ns';
-    root.querySelector('#delay-value').textContent=delay+' ns';
-    root.querySelector('#frequency-value').textContent=detuningLabel(detuning);
-    root.querySelector('#phase-value').textContent=phase+'°';
-    ctx.fillStyle='#0b1d30';ctx.fillRect(0,0,900,340);
-    ctx.strokeStyle='#284658';ctx.lineWidth=1;
+  shell(LEVELS[3],0,2,'对齐青色输出与黄色参考；匹配达到 90% 后发送微波。',calibrationView());
+  const find=selector=>root.querySelector(selector),input=selector=>Number(find(selector).value);
+  const ctx=find('#pulse-canvas').getContext('2d');
+  const sphere=find('[data-bloch="calibration"]'),trail=createBlochTrail(sphere);
+  let calibrated=false,match=0,mode='idle',remaining=0,travel=350;
+  let vector={x:0,y:0,z:1},pulseAxis={x:1,y:0,z:0};
+  const currentAxis=()=>driveAxis(input('#drive-strength'),input('#microwave-phase')*Math.PI/180,detuningFromSlider(input('#drive-frequency')));
+  function preparationButtons(show) {
+    find('#reset-response').hidden=show;
+    find('#prepare-one').hidden=!show;find('#prepare-superposition').hidden=!show;
+  }
+  function prepare(angle) {
+    mode='pulse';remaining=angle;pulseAxis=currentAxis();
+    sphere.dataset.motion=mode;
+    vector={x:0,y:0,z:1};trail.clear();travel=350;
+    preparationButtons(false);find('#continuous-drive').textContent='发送连续波';
+  }
+  find('#drive-toggle').addEventListener('click',()=>{
+    calibrated=true;find('.pulse-settings').hidden=true;find('.response-settings').hidden=false;
+    find('#drive-toggle').hidden=true;find('#continuous-drive').hidden=false;find('#calibration-next').disabled=false;
+    root.querySelector('.mission span').textContent='强度控制转速；频率和相位改变旋转轴。非共振时，半圈不一定到 |1⟩，¼ 圈也不一定为等概率叠加。';
+    prepare(Math.PI);
+  });
+  find('#reset-response').addEventListener('click',()=>{
+    mode='idle';vector={x:0,y:0,z:1};trail.clear();preparationButtons(true);
+    find('#continuous-drive').textContent='发送连续波';
+  });
+  find('#prepare-one').addEventListener('click',()=>prepare(Math.PI));
+  find('#prepare-superposition').addEventListener('click',()=>prepare(Math.PI/2));
+  find('#continuous-drive').addEventListener('click',()=>{
+    mode=mode==='continuous'?'idle':'continuous';preparationButtons(false);
+    find('#continuous-drive').textContent=mode==='continuous'?'停止连续波':'发送连续波';
+  });
+  function draw(delta,detuning) {
+    const amplitude=input('#amplitude')/100,duration=input('#duration'),delay=input('#pulse-delay');
+    // 可见包络取 ±2σ。前一束移出 2/3 时，下一束前缘进入画面。
+    travel+=delta*75;
+    const halfWidth=Math.max(60,duration)*6;
+    const spacing=900+halfWidth*4/3;
+    const center=travel%spacing-halfWidth;
+    ctx.fillStyle='#0b1d30';ctx.fillRect(0,0,900,340);ctx.strokeStyle='#284658';ctx.lineWidth=1;
     for(let x=0;x<900;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,340);ctx.stroke();}
     for(let y=20;y<340;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(900,y);ctx.stroke();}
-    const center=450+Math.sin(time*.45)*100;
-    function wave(a,d,offset,frequencyMHz,color,width) {
-      // 固定时间轴：载波频率与驱动频率成正比，峰间距随频率升高而缩小。
-      const carrierFrequency=.12*frequencyMHz/RESONANCE_MHZ;
+    function wave(a,d,offset,frequency,color,width,continuous=false) {
       ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=width;
-      for(let x=0;x<900;x++){
-        const p=x-center-offset, envelope=Math.exp(-((p/(d*3))**2));
-        const y=180-a*130*envelope*Math.cos(p*carrierFrequency);
+      for(let x=0;x<900;x++) {
+        const carrier=.08*frequency/RESONANCE_MHZ;
+        let displacement=0;
+        if(continuous)displacement=Math.cos((x-travel)*carrier);
+        else for(const repeat of [-1,0,1]) {
+          const p=x-center-repeat*spacing-offset;
+          if(Math.abs(p)>d*6)continue;
+          displacement+=Math.exp(-((p/(d*3))**2))*Math.cos(p*carrier);
+        }
+        // 发送后的量程容纳 200% 强度，避免波峰被画布裁切。
+        const y=(calibrated?170:180)-a*(calibrated?110:130)*displacement;
         if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
       }
       ctx.stroke();
     }
-    wave(.68,60,0,RESONANCE_MHZ,'#f0c56c',5);
-    wave(amplitude,duration,delay*3,frequency,'#62e5e1',3);
-    ctx.font='24px sans-serif';ctx.fillStyle='#f0c56c';ctx.fillText('参考',25,35);ctx.fillStyle='#62e5e1';ctx.fillText('输出',125,35);
-    match=Math.round(clamp(100-Math.abs(amplitude-.68)*110-Math.abs(duration-60)*1.3-Math.abs(delay)*1.1,0,100));
-    root.querySelector('#match-score').textContent=match+'%';
-  }
-  root.querySelector('#drive-toggle').addEventListener('click',e=>{running=!running;e.currentTarget.textContent=running?'停止微波':'发送微波';});
-  root.querySelector('#reset-response').addEventListener('click',()=>{
-    state=zeroState();running=false;elapsed=0;root.querySelector('#drive-toggle').textContent='发送微波';
-  });
-  animate(scene,(time,delta)=>{
-    // 波形与量子态使用同一映射，避免滑块只是改变示意图。
-    const detuning=detuningFromSlider(input('#drive-frequency'));
-    draw(time,detuning);
-    const phase=input('#microwave-phase')*Math.PI/180;
-    if(running){
-      elapsed+=delta;
-      state=rotate(state,0,delta*3.3*input('#amplitude')/68,phase);
-      state=applyOperation(state,{gate:'Z',target:0},delta*detuning/60);
+    if(!calibrated) {
+      wave(.68,60,0,RESONANCE_MHZ,'#f0c56c',5);
+      match=Math.round(clamp(100-Math.abs(amplitude-.68)*110-Math.abs(duration-60)*1.3-Math.abs(delay)*1.1,0,100));
+      find('#drive-toggle').disabled=match<90;
     }
-    const vector=reducedBloch(state,0);
-    updateBloch(root.querySelector('[data-bloch="calibration"]'),vector,phase);
-    root.querySelector('#rabi-readout').textContent='测到 1 的概率 '+((1-vector.z)*50).toFixed(1)+'%';
-    const disabled=match<90||elapsed<2;
-    if(root.querySelector('#calibration-next').disabled!==disabled)root.querySelector('#calibration-next').disabled=disabled;
+    wave(amplitude*(calibrated?input('#drive-strength')/100:1),duration,calibrated?0:delay*3,RESONANCE_MHZ+(calibrated?detuning:0),'#62e5e1',3,mode==='continuous');
+    ctx.font='24px sans-serif';ctx.fillStyle='#62e5e1';ctx.fillText(calibrated?'输出波形':'黄色参考 / 青色输出',25,35);
+    find('#match-score').textContent=match+'%'+(calibrated?' · 已锁定':'');
+    find('#amplitude-value').textContent=Math.round(amplitude*100)+'%';find('#duration-value').textContent=duration+' ns';find('#delay-value').textContent=delay+' ns';
+    find('#amplitude-match').textContent='匹配 '+Math.round(clamp(100-Math.abs(amplitude-.68)*110,0,100))+'%';
+    find('#duration-match').textContent='匹配 '+Math.round(clamp(100-Math.abs(duration-60)*1.3,0,100))+'%';
+  }
+  animate(scene,(_,delta)=>{
+    const detuning=detuningFromSlider(input('#drive-frequency'));draw(delta,detuning);
+    find('#frequency-value').textContent=detuningLabel(detuning);find('#phase-value').textContent=input('#microwave-phase')+'°';find('#strength-value').textContent=input('#drive-strength')+'%';
+    const axis=mode==='pulse'?pulseAxis:currentAxis(),moving=mode==='pulse'||mode==='continuous';
+    if(moving) {
+      const step=delta*2*input('#drive-strength')/100,angle=mode==='pulse'?Math.min(step,remaining):step;
+      vector=rotateVector(vector,axis,angle);
+      if(mode==='pulse'){remaining-=angle;if(remaining<=0)mode='idle';}
+    }
+    trail.update(vector,delta,moving);updateBloch(sphere,vector,0,axis);sphere.dataset.motion=mode;
+    find('#rabi-readout').textContent='测到 1 的概率 '+((1-vector.z)*50).toFixed(1)+'%';
   });
-  root.querySelector('#calibration-next').addEventListener('click',()=>onComplete(match));
+  find('#calibration-next').addEventListener('click',()=>onComplete(match));
 }
 
 return { mountCalibration };
 },
-30: () => {
+33: () => {
 // src\features\control\calibration-view.js
-const { blochSvg } = loadModule(28);
+const { blochSvg } = loadModule(31);
 function calibrationView() {
   return `<div class="workbench"><div class="instrument-head"><span class="live-badge">共振频率 5.10 GHz</span></div>
     <div class="calibration-layout"><section class="instrument-panel"><canvas id="pulse-canvas" width="900" height="340"></canvas>
-      <div class="control-grid pulse-settings"><label class="range-control">驱动幅度 <output id="amplitude-value">40%</output><input id="amplitude" type="range" min="10" max="100" value="40"></label>
-      <label class="range-control">脉冲时长 <output id="duration-value">35 ns</output><input id="duration" type="range" min="15" max="100" value="35"></label>
-      <label class="range-control">延时 <output id="delay-value">18 ns</output><input id="pulse-delay" type="range" min="-40" max="40" value="18"></label></div>
+      <div class="control-grid pulse-settings"><label class="range-control"><span class="pulse-label"><span>驱动幅度</span><span id="amplitude-match" class="parameter-match">匹配 —</span><output id="amplitude-value">40%</output></span><input id="amplitude" type="range" min="10" max="100" value="40"></label>
+      <label class="range-control"><span class="pulse-label"><span>脉冲时长</span><span id="duration-match" class="parameter-match">匹配 —</span><output id="duration-value">35 ns</output></span><input id="duration" type="range" min="15" max="100" value="35"></label>
+      <label class="range-control pulse-delay-control"><span class="pulse-label"><span>延时</span><span aria-hidden="true"></span><output id="delay-value">18 ns</output></span><input id="pulse-delay" type="range" min="-40" max="40" value="18"></label></div>
       <div class="readout"><small>波形匹配</small><strong id="match-score">0%</strong></div></section>
       <section class="instrument-panel"><div class="large-bloch">${blochSvg('calibration','Q0')}</div><div id="rabi-readout">P(1) = 0</div>
-      <div class="control-grid"><label class="range-control">驱动频率 <output id="frequency-value">失谐 +0.00 MHz</output><input id="drive-frequency" aria-label="驱动频率：中间精调，两端快调" type="range" min="-100" max="100" value="0" step="0.1"></label>
+      <div class="control-grid response-settings" hidden><label class="range-control">驱动强度 <output id="strength-value">100%</output><input id="drive-strength" type="range" min="10" max="200" value="100"></label><label class="range-control">驱动频率 <output id="frequency-value">失谐 +0.00 MHz</output><input id="drive-frequency" aria-label="驱动频率：中间精调，两端快调" type="range" min="-100" max="100" value="0" step="0.1"></label>
       <label class="range-control">相位 <output id="phase-value">0°</output><input id="microwave-phase" type="range" min="0" max="360" value="0"></label></div></section></div>
-    <div class="workbench-actions"><button id="drive-toggle" class="primary">发送微波</button><button id="reset-response" class="secondary">重置 |0⟩</button><button id="calibration-next" class="primary" disabled>编排量子门 →</button></div>
-    <p class="science-note">黄色参考与青色输出缓慢同向移动，调节幅度、时长与延时对齐。频率滑块中间 40% 精调 ±25 MHz，两端加速；失谐绝对值小于 20 MHz 时显示数值。驱动幅度控制共振旋转速度；频率偏离共振时产生失谐，改变有效旋转轴与响应。动画为旋转参考系中的慢速教学模拟。</p></div>`;
+    <div class="workbench-actions"><button id="drive-toggle" class="primary" disabled>发送微波</button><button id="reset-response" class="secondary" hidden>重置 |0⟩</button><button id="prepare-one" hidden>制备 |1⟩ · 半圈</button><button id="prepare-superposition" hidden>制备叠加态 · ¼ 圈</button><button id="continuous-drive" class="secondary" hidden>发送连续波</button><button id="calibration-next" class="primary" disabled>编排量子线路 →</button></div>
+    <p class="science-note">先调幅度、时长与延时，匹配达到 90% 后发送。评分随后锁定；驱动强度控制旋转速度，频率与相位控制旋转轴。频率滑块中间 40% 精调 ±25 MHz；失谐绝对值小于 20 MHz 时显示数值。有限脉冲从 |0⟩ 绕当前轴转半圈或 ¼ 圈，不强制共振，因此非共振时不保证到达 |1⟩ 或等概率叠加。连续波为正弦波，动画为旋转参考系的慢速教学模拟。</p></div>`;
 }
 
 return { calibrationView };
 },
-31: () => {
+34: () => {
+// src\shared\math.js
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+return { clamp };
+},
+35: () => {
+// src\features\control\drive-frequency.js
+const RESONANCE_MHZ = 5100;
+
+/** 滑块范围 −100～100；中间 40%（−40～40）覆盖 −25～25 MHz。 */
+function detuningFromSlider(position) {
+  const distance = Math.abs(position);
+  if (distance <= 40) return position * 25 / 40;
+
+  // 与精调区保持斜率连续；三次项让两端逐渐加速，端点为 ±2550 MHz。
+  const outerProgress = (distance - 40) / 60;
+  const boundarySlope = 25 / 40 * 60;
+  const outerDetuning = 25 + boundarySlope * outerProgress
+    + (RESONANCE_MHZ / 2 - 25 - boundarySlope) * outerProgress ** 3;
+  return Math.sign(position) * outerDetuning;
+}
+
+function detuningLabel(detuning) {
+  if (Math.abs(detuning) >= 20) return '';
+  return `失谐 ${detuning < 0 ? '−' : '+'}${Math.abs(detuning).toFixed(2)} MHz`;
+}
+
+return { RESONANCE_MHZ, detuningFromSlider, detuningLabel };
+},
+36: () => {
+// src\ui\bloch-trail.js
+const { projectBloch } = loadModule(31);
+
+// 展示开关：设为 false 可关闭轨迹，不影响量子态计算。
+const BLOCH_TRAIL_ENABLED = true;
+
+function createBlochTrail(svg, enabled = BLOCH_TRAIL_ENABLED) {
+  const group = document.createElementNS('http://www.w3.org/2000/svg','g');
+  group.classList.add('bloch-trail');
+  group.setAttribute('fill','none');group.setAttribute('stroke','#ffa65c');
+  group.setAttribute('stroke-width','1.5');group.setAttribute('stroke-dasharray','2 3');
+  group.setAttribute('pointer-events','none');
+  svg.insertBefore(group,svg.querySelector('.state-vector'));
+  const points=[];
+  let elapsed=0,clock=0;
+  return {
+    update(vector,delta,record=true) {
+      if(!enabled)return;
+      elapsed+=delta;clock+=delta;
+      if(elapsed<.05)return;
+      elapsed=0;
+      if(record)points.push({...projectBloch(vector),time:clock});
+      while(points.length && clock-points[0].time>4)points.shift();
+      group.innerHTML=points.slice(1).map((point,i)=>{
+        const previous=points[i],opacity=.5*(1-(clock-point.time)/4);
+        return `<path d="M${previous.x} ${previous.y}L${point.x} ${point.y}" opacity="${opacity}"/>`;
+      }).join('');
+    },
+    clear(){points.length=0;elapsed=0;clock=0;group.replaceChildren();}
+  };
+}
+
+return { BLOCH_TRAIL_ENABLED, createBlochTrail };
+},
+37: () => {
+// src\domain\drive-response.js
+/** 旋转参考系教学模型：失谐倾斜旋转轴，强度控制动画角速度。 */
+function driveAxis(strength, phase, detuning) {
+  const transverse=strength/100,z=detuning/60,length=Math.hypot(transverse,z);
+  return {x:transverse*Math.cos(phase)/length,y:transverse*Math.sin(phase)/length,z:z/length};
+}
+/** Rodrigues 旋转：有限脉冲精确停在指定角度，不强制共振。 */
+function rotateVector(v,a,angle) {
+  const c=Math.cos(angle),s=Math.sin(angle),dot=v.x*a.x+v.y*a.y+v.z*a.z;
+  return {x:v.x*c+(a.y*v.z-a.z*v.y)*s+a.x*dot*(1-c),
+    y:v.y*c+(a.z*v.x-a.x*v.z)*s+a.y*dot*(1-c),
+    z:v.z*c+(a.x*v.y-a.y*v.x)*s+a.z*dot*(1-c)};
+}
+
+return { driveAxis, rotateVector };
+},
+38: () => {
+// src\features\control\noise.js
+const { animate, randomBetween } = loadModule(12);
+
+const TYPES = [
+  {name:'TLS',icon:'✦',className:'tls'},
+  {name:'热噪声',icon:'♨',className:'thermal'},
+  {name:'宇宙射线',icon:'☄',className:'cosmic'}
+];
+
+/** 慢速、可提前看见的定向来袭。命中判定使用目标球的位置，而不是预设时间扣血。 */
+function mountNoiseDefense({root,scene,beep,onFrame,onFinish}) {
+  const field=root.querySelector('#processor-field');
+  const health=Array(5).fill(100), attacks=[];
+  let running=false,startTime=0,lastSpawn=0,cleared=0;
+  let noiseEnabled=true;
+  const damage=()=>Math.min(.65,health.reduce((sum,h)=>sum+100-h,0)/500);
+  function spawn(now) {
+    const type=TYPES[Math.floor(Math.random()*TYPES.length)],target=Math.floor(Math.random()*5);
+    const box=field.getBoundingClientRect();
+    const sphere=root.querySelector('[data-qubit-select="'+target+'"] svg').getBoundingClientRect();
+    const center={x:sphere.x+sphere.width/2-box.x,y:sphere.y+sphere.height/2-box.y};
+    // 从远侧边缘出发，避免噪声刚出现就碰到靠边的量子比特。
+    const origins=[{x:32,y:randomBetween(35,box.height-35)},{x:box.width-32,y:randomBetween(35,box.height-35)},{x:randomBetween(32,box.width-32),y:32},{x:randomBetween(32,box.width-32),y:box.height-32}]
+      .sort((a,b)=>Math.hypot(b.x-center.x,b.y-center.y)-Math.hypot(a.x-center.x,a.y-center.y));
+    const origin=origins[Math.floor(Math.random()*2)];
+    const button=document.createElement('button');
+    button.className='noise-event incoming-noise '+type.className;button.dataset.enemy=type.name;
+    button.setAttribute('aria-label','消除'+type.name+'，目标 Q'+target);
+    button.innerHTML='<span>'+type.icon+'</span><small>'+type.name+'</small>';
+    const attack={button,target,origin,created:now,duration:randomBetween(3.8,4.5),done:false};
+    function clear(event){event.preventDefault();event.stopPropagation();if(attack.done)return;attack.done=true;cleared++;button.classList.add('resolved');scene.timeout(()=>button.remove(),120);root.querySelector('#noise-cleared').textContent=cleared;beep(790,.035);}
+    button.addEventListener('pointerdown',clear);button.addEventListener('click',clear);
+    root.querySelector('#noise-layer').append(button);attacks.push(attack);
+  }
+  animate(scene,(now)=>{
+    if(!running)return;
+    const progress=Math.min(1,(now-startTime)/8);
+    if(noiseEnabled && now-lastSpawn>.53 && progress<.48){spawn(now);lastSpawn=now;}
+    const box=field.getBoundingClientRect();
+    attacks.forEach(attack=>{
+      if(attack.done)return;
+      const sphere=root.querySelector('[data-qubit-select="'+attack.target+'"] svg').getBoundingClientRect();
+      const target={x:sphere.x+sphere.width/2-box.x,y:sphere.y+sphere.height/2-box.y};
+      const t=Math.min(1,(now-attack.created)/attack.duration),x=attack.origin.x+(target.x-attack.origin.x)*t,y=attack.origin.y+(target.y-attack.origin.y)*t;
+      attack.button.style.left=x+'px';attack.button.style.top=y+'px';
+      if(Math.hypot(x-target.x,y-target.y)<Math.min(sphere.width,sphere.height)*.20){
+        attack.done=true;attack.button.remove();health[attack.target]=Math.max(0,health[attack.target]-25);
+        root.querySelector('[data-health="'+attack.target+'"]').style.width=health[attack.target]+'%';
+        const unit=root.querySelector('[data-qubit-select="'+attack.target+'"]');unit.classList.add('damaged');scene.timeout(()=>unit.classList.remove('damaged'),300);
+      }
+    });
+    root.querySelector('#algorithm-progress').textContent=(8*(1-progress)).toFixed(1)+' 秒';
+    root.querySelector('#protection-score').textContent=Math.round((1-damage())*100)+'%';
+    root.querySelectorAll('[data-qubit-select]').forEach(unit=>{
+      unit.classList.toggle('under-threat',attacks.some(attack=>!attack.done&&attack.target===Number(unit.dataset.qubitSelect)));
+    });
+    onFrame(progress,damage());
+    if(progress===1){running=false;attacks.forEach(a=>a.button.remove());root.querySelectorAll('.under-threat').forEach(unit=>unit.classList.remove('under-threat'));onFinish(damage(),cleared);}
+  });
+  return {start({withNoise=true}={}){
+    noiseEnabled=withNoise;
+    attacks.forEach(attack=>{attack.done=true;attack.button.remove();});attacks.length=0;
+    health.fill(100);cleared=0;
+    root.querySelectorAll('[data-health]').forEach(bar=>bar.style.width='100%');
+    root.querySelectorAll('[data-qubit-select]').forEach(unit=>unit.classList.remove('damaged','under-threat'));
+    root.querySelector('#noise-cleared').textContent='0';
+    root.querySelector('#protection-score').textContent='100%';
+    root.querySelector('#algorithm-progress').textContent='8.0 秒';
+    running=true;startTime=performance.now()/1000;lastSpawn=startTime-.3;
+    onFrame(0,0);
+  }};
+}
+
+return { mountNoiseDefense };
+},
+39: () => {
 // src\domain\statevector.js
 /** 五 qubit 状态向量。显示位序始终是 |q0 q1 q2 q3 q4⟩，q0 为最高位。 */
 const QUBITS = 5;
@@ -3307,105 +3835,61 @@ function describeState(state) {
 
 return { QUBITS, DIMENSION, zeroState, rotate, singleGate, applyOperation, runCircuit, probabilities, reducedBloch, sample, fidelity, inMeasurementBasis, bitstring, describeState };
 },
-32: () => {
-// src\shared\math.js
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
+40: () => {
+// src\features\control\gate-trajectories.js
+const { applyOperation, reducedBloch } = loadModule(39);
+const { projectBloch } = loadModule(31);
 
-return { clamp };
-},
-33: () => {
-// src\features\control\drive-frequency.js
-const RESONANCE_MHZ = 5100;
+const SAMPLES = 80;
 
-/** 滑块范围 −100～100；中间 40%（−40～40）覆盖 −25～25 MHz。 */
-function detuningFromSlider(position) {
-  const distance = Math.abs(position);
-  if (distance <= 40) return position * 25 / 40;
-
-  // 与精调区保持斜率连续；三次项让两端逐渐加速，端点为 ±2550 MHz。
-  const outerProgress = (distance - 40) / 60;
-  const boundarySlope = 25 / 40 * 60;
-  const outerDetuning = 25 + boundarySlope * outerProgress
-    + (RESONANCE_MHZ / 2 - 25 - boundarySlope) * outerProgress ** 3;
-  return Math.sign(position) * outerDetuning;
-}
-
-function detuningLabel(detuning) {
-  if (Math.abs(detuning) >= 20) return '';
-  return `失谐 ${detuning < 0 ? '−' : '+'}${Math.abs(detuning).toFixed(2)} MHz`;
-}
-
-return { RESONANCE_MHZ, detuningFromSlider, detuningLabel };
-},
-34: () => {
-// src\features\control\noise.js
-const { animate, randomBetween } = loadModule(12);
-
-const TYPES = [
-  {name:'TLS',icon:'✦',className:'tls'},
-  {name:'热噪声',icon:'♨',className:'thermal'},
-  {name:'宇宙射线',icon:'☄',className:'cosmic'}
-];
-
-/** 慢速、可提前看见的定向来袭。命中判定使用目标球的位置，而不是预设时间扣血。 */
-function mountNoiseDefense({root,scene,beep,onFrame,onFinish}) {
-  const field=root.querySelector('#processor-field');
-  const health=Array(5).fill(100), attacks=[];
-  let running=false,startTime=0,lastSpawn=0,cleared=0;
-  const damage=()=>Math.min(.65,health.reduce((sum,h)=>sum+100-h,0)/500);
-  function spawn(now) {
-    const type=TYPES[Math.floor(Math.random()*TYPES.length)],target=Math.floor(Math.random()*5);
-    const box=field.getBoundingClientRect();
-    const sphere=root.querySelector('[data-qubit-select="'+target+'"] svg').getBoundingClientRect();
-    const center={x:sphere.x+sphere.width/2-box.x,y:sphere.y+sphere.height/2-box.y};
-    // 从远侧边缘出发，避免噪声刚出现就碰到靠边的量子比特。
-    const origins=[{x:32,y:randomBetween(35,box.height-35)},{x:box.width-32,y:randomBetween(35,box.height-35)},{x:randomBetween(32,box.width-32),y:32},{x:randomBetween(32,box.width-32),y:box.height-32}]
-      .sort((a,b)=>Math.hypot(b.x-center.x,b.y-center.y)-Math.hypot(a.x-center.x,a.y-center.y));
-    const origin=origins[Math.floor(Math.random()*2)];
-    const button=document.createElement('button');
-    button.className='noise-event incoming-noise '+type.className;button.dataset.enemy=type.name;
-    button.setAttribute('aria-label','消除'+type.name+'，目标 Q'+target);
-    button.innerHTML='<span>'+type.icon+'</span><small>'+type.name+'</small>';
-    const attack={button,target,origin,created:now,duration:randomBetween(3.8,4.5),done:false};
-    function clear(event){event.preventDefault();event.stopPropagation();if(attack.done)return;attack.done=true;cleared++;button.classList.add('resolved');scene.timeout(()=>button.remove(),120);root.querySelector('#noise-cleared').textContent=cleared;beep(790,.035);}
-    button.addEventListener('pointerdown',clear);button.addEventListener('click',clear);
-    root.querySelector('#noise-layer').append(button);attacks.push(attack);
-  }
-  animate(scene,(now)=>{
-    if(!running)return;
-    const progress=Math.min(1,(now-startTime)/8);
-    if(now-lastSpawn>.7 && progress<.48){spawn(now);lastSpawn=now;}
-    const box=field.getBoundingClientRect();
-    attacks.forEach(attack=>{
-      if(attack.done)return;
-      const sphere=root.querySelector('[data-qubit-select="'+attack.target+'"] svg').getBoundingClientRect();
-      const target={x:sphere.x+sphere.width/2-box.x,y:sphere.y+sphere.height/2-box.y};
-      const t=Math.min(1,(now-attack.created)/attack.duration),x=attack.origin.x+(target.x-attack.origin.x)*t,y=attack.origin.y+(target.y-attack.origin.y)*t;
-      attack.button.style.left=x+'px';attack.button.style.top=y+'px';
-      if(Math.hypot(x-target.x,y-target.y)<Math.min(sphere.width,sphere.height)*.20){
-        attack.done=true;attack.button.remove();health[attack.target]=Math.max(0,health[attack.target]-25);
-        root.querySelector('[data-health="'+attack.target+'"]').style.width=health[attack.target]+'%';
-        const unit=root.querySelector('[data-qubit-select="'+attack.target+'"]');unit.classList.add('damaged');scene.timeout(()=>unit.classList.remove('damaged'),300);
-      }
-    });
-    root.querySelector('#algorithm-progress').textContent=(8*(1-progress)).toFixed(1)+' 秒';
-    root.querySelector('#protection-score').textContent=Math.round((1-damage())*100)+'%';
-    onFrame(progress,damage());
-    if(progress===1){running=false;attacks.forEach(a=>a.button.remove());onFinish(damage(),cleared);}
+/** 当前门的未来轨迹，使用与实际演算完全相同的门插值和球面投影。 */
+function createGateTrajectories(spheres) {
+  const paths=spheres.map(sphere=>{
+    const svg=sphere.querySelector('svg');
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.classList.add('gate-future-trail');
+    path.setAttribute('fill','none');path.setAttribute('stroke','#ffc078');
+    path.setAttribute('stroke-width','2');path.setAttribute('stroke-dasharray','3 3');
+    path.setAttribute('opacity','.65');path.setAttribute('pointer-events','none');
+    svg.insertBefore(path,svg.querySelector('.state-vector'));
+    return path;
   });
-  return {start(){running=true;startTime=performance.now()/1000;lastSpawn=startTime-.3;}};
+  let samples=[],participants=new Set();
+  function clear() {
+    samples=[];participants.clear();
+    paths.forEach(path=>{path.setAttribute('d','');path.removeAttribute('data-progress');});
+  }
+  return {
+    clear,
+    prepare(base,operation) {
+      clear();
+      participants=new Set(operation.targets || [operation.target]);
+      if(operation.control!==undefined)participants.add(operation.control);
+      samples=Array.from({length:SAMPLES+1},(_,index)=>{
+        const state=applyOperation(base,operation,index/SAMPLES);
+        return spheres.map((_,q)=>projectBloch(reducedBloch(state,q)));
+      });
+    },
+    update(fraction,state) {
+      paths.forEach((path,q)=>{
+        if(!participants.has(q)||fraction>=1){path.setAttribute('d','');return;}
+        const head=projectBloch(reducedBloch(state,q));
+        const remaining=[head,...samples.slice(Math.floor(fraction*SAMPLES)+1).map(sample=>sample[q])];
+        path.setAttribute('d',remaining.map((point,i)=>`${i?'L':'M'}${point.x} ${point.y}`).join(' '));
+        path.setAttribute('data-progress',fraction);
+      });
+    }
+  };
 }
 
-return { mountNoiseDefense };
+return { createGateTrajectories };
 },
-35: () => {
+41: () => {
 // src\features\measurement\index.js
 const { LEVELS } = loadModule(8);
-const { measurementView, noExperimentView } = loadModule(36);
-const { probabilities, reducedBloch, sample, bitstring, describeState } = loadModule(31);
-const { updateBloch } = loadModule(28);
+const { measurementView, noExperimentView } = loadModule(42);
+const { probabilities, reducedBloch, sample, bitstring, describeState } = loadModule(39);
+const { updateBloch } = loadModule(31);
 
 function mount({root,shell,beep,awardLevel,experiment,navigate}) {
   const saved=experiment.load();
@@ -3450,9 +3934,9 @@ function mount({root,shell,beep,awardLevel,experiment,navigate}) {
 
 return { mount };
 },
-36: () => {
+42: () => {
 // src\features\measurement\views.js
-const { blochSvg } = loadModule(28);
+const { blochSvg } = loadModule(31);
 function measurementView() {
   return `<div class="workbench"><div class="instrument-head"><span class="live-badge">五比特量子分析</span></div>
     <section class="instrument-panel"><div class="readout-header"><span>最近一次测量</span><strong id="last-result">尚未测量</strong></div>
@@ -3469,17 +3953,17 @@ function noExperimentView() {
 
 return { measurementView, noExperimentView };
 },
-37: () => {
+43: () => {
 // src\features\maze\index.js
 const { LEVELS } = loadModule(8);
-const { mazeView } = loadModule(38);
-const { createSearch, searchStep, optimalIterations } = loadModule(40);
-const { fixedMazeRoutes, MAZE_WINNER } = loadModule(39);
-const { sample } = loadModule(31);
+const { mazeView } = loadModule(44);
+const { createSearch, searchStep, optimalIterations } = loadModule(46);
+const { fixedMazeRoutes, MAZE_WINNER } = loadModule(45);
+const { sample } = loadModule(39);
 const { shuffle } = loadModule(12);
 
 function mount({root,scene,shell,beep,showToast,awardLevel}) {
-  shell(LEVELS[5],0,1,'随机制备部分路线的叠加态，搜索后测试；没有出口就重新制备。',mazeView());
+  shell(LEVELS[5],0,1,'并行测试多种路径，找到正确的结果。先制备 → 搜索 → 测试；下方光屏越亮，测到该路线的概率越大。',mazeView());
   const routes=fixedMazeRoutes();
   let selected=[],search=null,recommended=0,walking=false;
   function draw(){
@@ -3497,6 +3981,13 @@ function mount({root,scene,shell,beep,showToast,awardLevel}) {
     root.querySelector('#best-probability').textContent=(max*100).toFixed(1)+'%';
     root.querySelector('#search-description').textContent='已选择 '+selected.length+' / 16 条；搜索 '+search.iteration+' / '+recommended+' 轮。';
     root.querySelector('#path-probabilities').innerHTML=selected.map((id,i)=>'<p>路线 '+(id+1)+'：'+(search.amplitudes[i]**2*100).toFixed(1)+'%</p>').join('');
+    root.querySelectorAll('[data-probability-route]').forEach(screen=>{
+      const id=Number(screen.dataset.probabilityRoute),index=selected.indexOf(id);
+      const probability=index<0?0:search.amplitudes[index]**2;
+      screen.querySelector('rect').setAttribute('fill',routes[id].color);
+      screen.querySelector('rect').setAttribute('opacity',.05+.95*probability);
+      screen.querySelector('text').textContent=`${id+1}: ${Math.round(probability*100)}%`;
+    });
   }
   function routeLength(id) {
     return root.querySelector('[data-route="'+id+'"]').getTotalLength();
@@ -3560,14 +4051,14 @@ function mount({root,scene,shell,beep,showToast,awardLevel}) {
 
 return { mount };
 },
-38: () => {
+44: () => {
 // src\features\maze\views.js
-const { fixedMazeRoutes } = loadModule(39);
+const { fixedMazeRoutes } = loadModule(45);
 function mazeView() {
   const routes = fixedMazeRoutes();
   const exit = routes.find(route => !route.blocked);
   return `<div class="workbench"><div class="instrument-head"><span id="maze-status" class="live-badge">16 条固定走廊</span></div>
-    <section class="viewport maze-viewport"><svg id="quantum-maze" viewBox="0 0 760 710" aria-label="固定16条候选路线的量子实战迷宫">
+    <section class="viewport maze-viewport"><svg id="quantum-maze" viewBox="0 0 760 810" aria-label="固定16条候选路线的量子实战迷宫">
     <g class="maze-walls" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <g stroke="#304959" stroke-width="21">${routes.map(r=>`<path d="${r.path}"/>`).join('')}</g>
       <g stroke="#091f2c" stroke-width="13">${routes.map(r=>`<path d="${r.path}"/>`).join('')}</g>
@@ -3579,7 +4070,9 @@ function mazeView() {
       <rect x="-15" y="-7" width="30" height="16" rx="3" fill="#297c67" stroke="#9affd4" stroke-width="3"/>
       <text x="0" y="35" text-anchor="middle" class="maze-label">出口</text>
     </g>
-    <circle id="maze-traveler" cx="380" cy="42" r="10" fill="#fff4b4" stroke="white" stroke-width="3" opacity="0"/></svg></section>
+    <circle id="maze-traveler" cx="380" cy="42" r="10" fill="#fff4b4" stroke="white" stroke-width="3" opacity="0"/>
+    <text x="380" y="716" text-anchor="middle" fill="#c6e8ef" font-size="24">概率光屏 · 测量选中各路线的概率</text>
+    <g id="probability-screen">${routes.map((route,i)=>`<g data-probability-route="${i}" transform="translate(${12+i%8*93} ${728+Math.floor(i/8)*38})"><rect width="86" height="32" rx="5" fill="${route.color}" opacity=".05"/><text x="43" y="23" text-anchor="middle" fill="#eefcff" font-size="22">${i+1}: —</text></g>`).join('')}</g></svg></section>
     <aside class="control-panel"><label class="select-control">叠加比特数 <select id="path-count"><option value="2">1 qubit · 2 条</option><option value="4">2 qubit · 4 条</option><option value="8" selected>3 qubit · 8 条</option><option value="16">4 qubit · 16 条</option></select></label>
     <button id="prepare-paths" class="primary">随机制备叠加态</button>
     <div class="readout"><small>最亮路线概率</small><strong id="best-probability">—</strong><span id="search-description">先随机选取 2、4、8 或 16 条走廊。</span></div>
@@ -3589,7 +4082,7 @@ function mazeView() {
 
 return { mazeView };
 },
-39: () => {
+45: () => {
 // src\domain\maze.js
 const MAZE_WINNER = 11;
 // 同一次加载共用终点位置，避免制备、绘制与试走时障碍发生漂移。
@@ -3613,7 +4106,7 @@ function fixedMazeRoutes() {
 
 return { MAZE_WINNER, fixedMazeRoutes };
 },
-40: () => {
+46: () => {
 // src\domain\search.js
 /** 一个已由 oracle 标记的最优候选路线；迭代次数来自 Grover 振幅放大。 */
 function createSearch(pathCount, winner) {
@@ -3644,7 +4137,7 @@ function optimalIterations(count) {
 
 return { createSearch, searchStep, optimalIterations };
 },
-41: () => {
+47: () => {
 // src\ui\toast.js
 function createToast(toastEl) {
   function showToast(message) {
@@ -3658,7 +4151,7 @@ function createToast(toastEl) {
 
 return { createToast };
 },
-42: () => {
+48: () => {
 // src\ui\navigation.js
 const { LEVELS } = loadModule(8);
 function renderNavigation({
@@ -3674,7 +4167,7 @@ function renderNavigation({
 
 return { renderNavigation };
 },
-43: () => {
+49: () => {
 // src\ui\home.js
 const { LEVELS } = loadModule(8);
 const { fridgeSvg } = loadModule(15);
@@ -3692,7 +4185,7 @@ function renderHome({ game, save, startLevel }) {
 
 return { renderHome };
 },
-44: () => {
+50: () => {
 // src\ui\level-shell.js
 function renderLevelShell(game, level, step, stepCount, mission, content) {
   game.innerHTML = `<section class="level-shell" data-current-level="${level.id}">
@@ -3724,7 +4217,7 @@ function renderLevelShell(game, level, step, stepCount, mission, content) {
 
 return { renderLevelShell };
 },
-45: () => {
+51: () => {
 // src\ui\results.js
 const { LEVELS } = loadModule(8);
 function renderResult({
@@ -3758,7 +4251,7 @@ function renderFinal({
 
 return { renderResult, renderFinal };
 },
-46: () => {
+52: () => {
 // src\ui\immersive.js
 /** 单屏视图编排：移动真实控件，不复制状态，也不修改各关的计算逻辑。 */
 function mountImmersive(root, scene) {
@@ -3799,6 +4292,9 @@ function mountImmersive(root, scene) {
   function actions(ids) { return ids.map(id => move(id, dock)); }
   function currentActions(buttons) { buttons.forEach(button => conceal(button, button.disabled)); }
   const updates = [];
+  scene.listen(workbench, 'contextmenu', event => {
+    if (event.target.closest('button,[role=button],svg,input[type=range]')) event.preventDefault();
+  });
 
   // 说明、完整流程和放大图进入指南，不再挤压操作画面。
   source.querySelectorAll('.science-help,details.junction-inset').forEach(node => helpContent.append(node));
@@ -3834,7 +4330,7 @@ function mountImmersive(root, scene) {
     workbench.dataset.scene = 'processing';
     move('.process-viewport', stage);
     readout('#process-progress');
-    const buttons = actions(['#expose', '#develop', '#etch', '#strip', '#process-next']);
+    const buttons = actions(['#develop', '#etch', '#strip', '#process-next']);
     updates.push(() => currentActions(buttons));
   } else if (find('#package-surface')) {
     workbench.dataset.scene = 'packaging';
@@ -3852,7 +4348,8 @@ function mountImmersive(root, scene) {
     readout('#installed-count');
     move('.inventory', sheetContent);
     const choose = sheetButton('＋ 选择器件', '选择器件，再点击对应安装位');
-    const buttons = actions(['#test-chain', '#seal-fridge', '#install-finish']);
+    const test=move('#test-chain',dock);
+    const buttons = actions(['#seal-fridge', '#install-finish']);
     scene.listen(sheet, 'click', event => {
       const part = event.target.closest('[data-part]');
       if (!part || part.disabled) return;
@@ -3861,6 +4358,7 @@ function mountImmersive(root, scene) {
     });
     updates.push(() => {
       conceal(choose, !root.querySelector('[data-part]:not(:disabled)'));
+      conceal(test,root.querySelector('.fridge-svg').classList.contains('shielded'));
       currentActions(buttons);
     });
   } else if (find('#pump-start')) {
@@ -3884,9 +4382,11 @@ function mountImmersive(root, scene) {
     const rate = find('#evap-rate').closest('label'); dock.append(rate);
     const buttons = actions(['#gas-valve', '#condense-start', '#cooling-finish']);
     const single = move('#try-electrons', dock);
+    const enterPairing = move('#enter-pairing', dock);
     updates.push(() => {
       const pairing = workbench.dataset.phase === 'pairing';
       conceal(rate, find('#evap-rate').disabled || pairing);
+      conceal(enterPairing, find('#evap-rate').disabled || pairing);
       conceal(single, !pairing || !find('#cooling-finish').disabled);
       currentActions(buttons);
     });
@@ -3896,18 +4396,21 @@ function mountImmersive(root, scene) {
     readout('#match-score');
     source.querySelectorAll('.control-grid').forEach(node => dock.append(node));
     move('#reset-response', dock);
-    actions(['#drive-toggle', '#calibration-next']);
+    actions(['#drive-toggle', '#prepare-one', '#prepare-superposition', '#continuous-drive', '#calibration-next']);
     updates.push(() => conceal(find('#calibration-next'), find('#calibration-next').disabled));
   } else if (find('#processor-field')) {
     workbench.dataset.scene = 'processor';
     move('#processor-field', stage); move('.processor-hud', hud);
     const editor = move('.circuit-editor', stage);
     const run = move('#run-algorithm', dock);
+    move('#protection-start', dock);
+    move('#pure-playback', dock);
     move('#algorithm-result', dock);
     updates.push(() => {
       const running = workbench.dataset.phase === 'running';
       const finished = !find('#algorithm-result').hidden;
-      conceal(editor, running || finished); conceal(run, running || finished);
+      const ready = workbench.dataset.phase === 'ready';
+      conceal(editor, ready || running || finished); conceal(run, ready || running || finished);
     });
   } else if (find('#measurement-bars')) {
     workbench.dataset.scene = 'measurement';
@@ -3926,10 +4429,20 @@ function mountImmersive(root, scene) {
     move('.maze-viewport', stage);
     readout('#best-probability');
     move('#path-probabilities', sheetContent);
-    sheetButton('概率详情');
     const count = find('#path-count').closest('label'); dock.append(count);
-    const buttons = actions(['#prepare-paths', '#search-paths', '#measure-path', '#maze-finish']);
-    updates.push(() => { currentActions(buttons); conceal(count, !find('#maze-finish').disabled); });
+    actions(['#prepare-paths', '#search-paths', '#measure-path', '#maze-finish']);
+    // 三个操作一直占位；只改变可用状态和高亮，避免每一步切换时跳动。
+    updates.push(() => {
+      const finish=find('#maze-finish');
+      conceal(finish,finish.disabled);
+      ['#prepare-paths','#search-paths','#measure-path'].forEach(id=>{
+        const button=find(id);
+        const current=id==='#prepare-paths'
+          ? find('#search-paths').disabled && find('#measure-path').disabled && finish.disabled
+          : !button.disabled;
+        button.classList.toggle('maze-step-active',current && !button.disabled);
+      });
+    });
   } else {
     // 用户尚未运行上一关，保留明确的返回操控入口。
     stage.append(...source.childNodes);
@@ -3944,6 +4457,89 @@ function mountImmersive(root, scene) {
 }
 
 return { mountImmersive };
+},
+53: () => {
+// src\config.js
+const ENABLE_TEST_NAVIGATION = false;
+return { ENABLE_TEST_NAVIGATION };
+},
+54: () => {
+// src\core\test-session.js
+const { createProgressStore } = loadModule(2);
+const { runCircuit } = loadModule(39);
+
+/** 只写内存的测试存档，不触碰 localStorage，也不改变正常游戏的状态对象。 */
+function createTestSession(normalState) {
+  let value = JSON.stringify(normalState);
+  const store = createProgressStore({
+    getItem: () => value,
+    setItem: (_, next) => {value = next;},
+    removeItem: () => {value = null;}
+  });
+  store.state.unlocked = 6;
+  store.state.sound = false;
+  const circuit = [{gate:'H',targets:[0]},...[1,2,3,4].map(target=>({gate:'CNOT',control:0,target}))];
+  const state = runCircuit(circuit);
+  store.state.experiment = {circuit,ideal:state,actual:state,noise:0,calibrationAccuracy:100,protectionScore:100,stateFidelity:1};
+  return store;
+}
+
+return { createTestSession };
+},
+55: () => {
+// src\ui\test-navigation.js
+const TEST_DESTINATIONS = [
+  {level:1,step:'cleaning',label:'1.1 晶圆清洁'},
+  {level:1,step:'lithography',label:'1.2 激光画芯片'},
+  {level:1,step:'processing',label:'1.3 显影与图形转移'},
+  {level:1,step:'develop',label:'1.3 显影'},
+  {level:1,step:'etch',label:'1.3 刻蚀'},
+  {level:1,step:'strip',label:'1.3 去胶'},
+  {level:1,step:'packaging',label:'1.4 芯片装盒'},
+  {level:1,step:'bonding',label:'1.4 金线键合'},
+  {level:1,step:'lid',label:'1.4 安装屏蔽盖'},
+  {level:2,step:'installation',label:'2.1 器件与链路安装'},
+  {level:2,step:'shields',label:'2.2 四层屏蔽筒'},
+  {level:3,step:'vacuum',label:'3.1 抽真空'},
+  {level:3,step:'precooling',label:'3.2 脉管预冷'},
+  {level:3,step:'condense',label:'3.3 手阀与冷凝'},
+  {level:3,step:'evaporation',label:'3.3 抽气速率精调'},
+  {level:3,step:'pairing',label:'3.4 Cooper 对隧穿'},
+  {level:4,step:'calibration',label:'4.1 波形校准'},
+  {level:4,step:'circuit',label:'4.2 量子门编排'},
+  {level:4,step:'protection',label:'4.3 保护量子比特'},
+  {level:5,step:'measurement',label:'5 量子测量与分析'},
+  {level:6,step:'maze',label:'6 量子迷宫'}
+];
+
+function createTestNavigation({document,onJump,onExit,isTesting}) {
+  const dialog=document.createElement('dialog');
+  dialog.id='test-navigation';dialog.className='scene-sheet';
+  dialog.innerHTML=`<header><b>测试跳转</b><button data-test-close aria-label="关闭测试跳转">✕</button></header>
+    <div class="sheet-content"><p>进入后使用临时存档，成绩与实验数据不会覆盖正常进度。测量关预置五比特纠缠示例。</p>
+    <div class="test-destinations">${TEST_DESTINATIONS.map((item,index)=>`<button class="secondary" data-test-destination="${index}">${item.label}</button>`).join('')}</div>
+    <button class="primary" data-test-exit>退出测试 · 返回正常游戏</button></div>`;
+  document.body.append(dialog);
+  dialog.querySelector('[data-test-close]').addEventListener('click',()=>dialog.close());
+  dialog.querySelector('[data-test-exit]').addEventListener('click',()=>{dialog.close();onExit();});
+  dialog.querySelectorAll('[data-test-destination]').forEach(button=>button.addEventListener('click',()=>{
+    dialog.close();onJump(TEST_DESTINATIONS[Number(button.dataset.testDestination)]);
+  }));
+  return {
+    attach(root) {
+      const button=document.createElement('button');
+      button.id='test-navigation-open';button.className='test-navigation-open';
+      button.textContent=isTesting()?'测试中':'测试';
+      button.setAttribute('aria-label','打开小关卡测试跳转');
+      button.addEventListener('click',()=>dialog.showModal());
+      const header=root.querySelector('.level-head');
+      if(header)header.insertBefore(button,header.querySelector('#scene-help-open'));
+      else {button.classList.add('test-navigation-floating');root.append(button);}
+    }
+  };
+}
+
+return { TEST_DESTINATIONS, createTestNavigation };
 }
 };
   const cache = new Map();
