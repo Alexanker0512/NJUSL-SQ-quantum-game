@@ -70,6 +70,39 @@ a {color:#1f7394;}
 .experiment-card p {font-size:10px;color:#8ca0ad;}
 .experiment-card>b {position:absolute;top:24px;right:24px;font-size:18px;font-weight:400;}
 
+.level-cover {height:100%;padding:clamp(20px,4vw,48px);display:flex;flex-direction:column;gap:24px;overflow:auto;background:radial-gradient(circle at 78% 22%,#1b6371 0,#102f40 28%,#07151f 70%);color:#e6f8f6;}
+.cover-top {display:flex;justify-content:space-between;gap:16px;color:#8bbbc3;font:12px monospace;letter-spacing:1px;}
+.cover-brand {color:#6fe4ce;}
+.cover-content {width:min(100%,950px);margin:auto;display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:clamp(24px,5vw,80px);}
+.cover-heading {position:relative;isolation:isolate;}
+.cover-number {position:absolute;z-index:-1;top:-.55em;left:-.12em;color:#ffffff0c;font:clamp(170px,25vw,320px)/1 monospace;pointer-events:none;}
+.cover-heading>p {font-size:14px;color:#6fe4ce;letter-spacing:2px;}
+.cover-heading h1 {font-size:clamp(34px,5vw,64px);line-height:1.2;margin:20px 0 32px;letter-spacing:2px;}
+.cover-process {display:flex;flex-wrap:wrap;gap:9px;}
+.cover-process span {display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid #57919a66;border-radius:20px;color:#a9d3d5;font-size:12px;}
+.cover-process b {color:#6fe4ce;font:12px monospace;}
+.cover-story {display:grid;gap:16px;}
+.cover-story>div {padding:24px;border:1px solid #5a9ca466;border-left:3px solid #6fe4ce;border-radius:8px;background:#09222dcc;}
+.cover-label {font-size:12px;color:#70dbc9;letter-spacing:1px;}
+.cover-story p {font-size:clamp(15px,1.6vw,18px);line-height:1.75;margin:12px 0 0;}
+.cover-story>div>p:first-child {margin-top:0;}
+.cover-actions {width:min(100%,950px);margin:0 auto;display:flex;justify-content:flex-end;gap:12px;}
+.cover-actions button {min-height:48px;padding:10px 24px;border-radius:6px;}
+.cover-actions .primary {background:#5cdec3;border:1px solid #8afce0;color:#063638;}
+.cover-actions .secondary {background:#163443;border:1px solid #4b7787;color:#aad6db;}
+@media(max-width:700px) {
+  .level-cover {gap:16px;padding:20px 18px max(20px,env(safe-area-inset-bottom));}
+  .cover-top {font-size:10px;}
+  .cover-content {display:block;}
+  .cover-heading h1 {margin:12px 0 20px;}
+  .cover-number {top:-.45em;font-size:180px;}
+  .cover-story {gap:10px;margin-top:28px;}
+  .cover-story>div {padding:15px 17px;}
+  .cover-story p {font-size:14px;margin-top:7px;}
+  .cover-actions {display:grid;grid-template-columns:1fr 1fr;}
+  .cover-actions button {padding:8px;}
+}
+
 .eyebrow {font:10px/1.6 monospace;letter-spacing:2px;color:#6f8c9f;display:block;margin-bottom:12px;}
 .level-head {display:flex;align-items:center;justify-content:space-between;padding:7px 0 24px;}
 .level-head h1 {font-size:30px;font-weight:600;letter-spacing:1px;margin:0;}
@@ -78,7 +111,8 @@ a {color:#1f7394;}
 .step-pills span {height:4px;width:25px;background:#d2dfe7;border-radius:5px;}
 .step-pills span.active {background:#50869f;}
 .step-pills small {margin-left:9px;font:11px monospace;color:var(--muted);}
-.mission {display:flex;align-items:flex-start;gap:17px;font-size:12px;line-height:1.7;padding:15px 19px;background:#e1ecf28f;border:1px solid #c7d9e3;border-left:3px solid #5d8fa8;border-radius:5px;margin-bottom:21px;}
+.mission {display:flex;flex-direction:column;gap:4px;font-size:12px;line-height:1.7;padding:15px 19px;background:#e1ecf28f;border:1px solid #c7d9e3;border-left:3px solid #5d8fa8;border-radius:5px;margin-bottom:21px;}
+.mission-goal,.mission-task {display:flex;align-items:flex-start;gap:17px;}
 .mission b {flex-shrink:0;color:#32627f;}
 .mission span {color:#58788c;}
 .workbench {position:relative;background:#fefeff;border:1px solid #cbdbe5;border-radius:12px;box-shadow:0 18px 55px #23465c10,0 2px 4px #23465c06;overflow:hidden;}
@@ -931,7 +965,6 @@ body.playing .level-head:has(.test-navigation-open) .step-pills span {display:no
     <main id="game" tabindex="-1"></main>
 
     <footer class="footer">
-      <span>用实验理解量子，而不是背诵量子。</span>
       <button class="text-button" id="reset-button">重置进度</button>
     </footer>
 
@@ -953,19 +986,21 @@ return {  };
 1: () => {
 // src\core\application.js
 const { createProgressStore } = loadModule(2);
-const { createSceneScope } = loadModule(3);
-const { createAudio } = loadModule(4);
-const { recordResult } = loadModule(5);
-const { levelModules } = loadModule(6);
+const { LEVELS } = loadModule(3);
+const { createSceneScope } = loadModule(4);
+const { createAudio } = loadModule(5);
+const { recordResult } = loadModule(6);
+const { levelModules } = loadModule(7);
 const { createToast } = loadModule(47);
 const { renderNavigation } = loadModule(48);
 const { renderHome } = loadModule(49);
-const { renderLevelShell } = loadModule(50);
-const { renderResult, renderFinal } = loadModule(51);
-const { mountImmersive } = loadModule(52);
-const { ENABLE_TEST_NAVIGATION } = loadModule(53);
-const { createTestSession } = loadModule(54);
-const { createTestNavigation } = loadModule(55);
+const { renderLevelCover } = loadModule(50);
+const { renderLevelShell } = loadModule(51);
+const { renderResult, renderFinal } = loadModule(52);
+const { mountImmersive } = loadModule(53);
+const { ENABLE_TEST_NAVIGATION } = loadModule(54);
+const { createTestSession } = loadModule(55);
+const { createTestNavigation } = loadModule(56);
 
 /** 应用层负责导航与存档；关卡通过 context 使用公共服务。 */
 function createApplication(document) {
@@ -1042,11 +1077,24 @@ function createApplication(document) {
       top: 0,
       behavior: 'smooth'
     });
+    if (progress.state.seenCovers[id] || progress.state.stars[id]) {
+      beginLevel(id, testStep);
+      return;
+    }
+    renderLevelCover(root, LEVELS[id - 1], () => {
+      progress.state.seenCovers[id] = true;
+      persist();
+      beginLevel(id, testStep);
+    }, goHome);
+    testNavigation?.attach(root);
+  }
+  function beginLevel(id, testStep) {
     levelModules[id]({
       root,
       scene,
       beep,
       showToast,
+      setStepPurpose: purpose => { root.querySelector('.mission-goal span').textContent = purpose; },
       awardLevel,
       testStep: ENABLE_TEST_NAVIGATION && testing() ? testStep : null,
       navigate: startLevel,
@@ -1131,6 +1179,7 @@ function createInitialProgress() {
     unlocked: 1,
     stars: {},
     scores: {},
+    seenCovers: {},
     achievements: [],
     current: 0,
     sound: true,
@@ -1165,6 +1214,92 @@ function createProgressStore(storage = localStorage) {
 return { createInitialProgress, createProgressStore };
 },
 3: () => {
+// src\data\levels.js
+const LEVELS = [{
+  id: 1,
+  icon: '01',
+  short: '芯片制备',
+  title: '芯片制造与封装',
+  purpose: '在晶圆上做出电路并封装接线，让量子芯片能够接收控制信号。',
+  significance: '量子实验从可用的芯片开始。清洁、图形加工和封装决定了电路能否稳定地接入后续设备。',
+  stepPurposes: [
+    '清除晶圆表面的颗粒和有机污染，避免它们破坏后续电路图形。',
+    '描绘量子比特的电路结构，并通过光刻把图形转移到晶圆表面。',
+    '通过显影、刻蚀和去胶加工量子芯片，把设计图形变成实际电路。',
+    '封装芯片并完成电连接，让控制和读出信号能够进出芯片。'
+  ],
+  subtitle: '材料清洁 / 光刻加工 / 精密键合'
+}, {
+  id: 2,
+  icon: '02',
+  short: '设备安装',
+  title: '制冷机与微波链路',
+  purpose: '把芯片接入低温设备，并检查传递控制与测量信号的链路。',
+  significance: '芯片需要冷却，也需要可靠的信号通道；器件方向或连接出错，控制脉冲与读出信号就无法正确传输。',
+  stepPurposes: ['把器件装在对应温级并检查链路，让微波信号能到达芯片并返回。'],
+  subtitle: '分温级装配 / 有向器件 / 链路诊断'
+}, {
+  id: 3,
+  icon: '03',
+  short: '低温实验',
+  title: '毫开尔文降温行动',
+  purpose: '隔绝外界热量并逐级降温，让芯片进入低热噪声的超导工作环境。',
+  significance: '环境太热时，热扰动会淹没脆弱的量子状态。低温和隔热是超导量子比特工作的前提。',
+  stepPurposes: [
+    '抽走空气、修复漏点，减少气体传热，为后续降温创造隔热环境。',
+    '建立氦循环并继续降温，让混合室接近量子芯片所需的极低温。'
+  ],
+  subtitle: '隔热真空 / 脉管预冷 / 超导隧穿'
+}, {
+  id: 4,
+  icon: '04',
+  short: '量子操控',
+  title: '五 qubit 操控实验',
+  purpose: '校准微波脉冲并编排量子门，控制量子比特的状态。',
+  significance: '量子计算依靠精确的脉冲和量子门；校准与噪声控制决定操作能否按预期完成。',
+  stepPurposes: [
+    '校准微波脉冲的形状和时序，让它按预期驱动量子比特。',
+    '编排量子门并运行电路，把量子比特制备成需要的状态。'
+  ],
+  subtitle: '微波校准 / 自定义电路 / 噪声保护'
+}, {
+  id: 5,
+  icon: '05',
+  short: '量子分析',
+  title: '量子分析',
+  purpose: '重复测量并统计结果，检验量子电路产生的状态。',
+  significance: '单次测量只给出一次结果；重复实验形成的统计分布，才能用来判断电路运行得如何。',
+  stepPurposes: ['重复读取量子比特并比较概率分布，判断实验结果与目标状态有多接近。'],
+  subtitle: '重复测量 / 五比特概率 / 理论态对照'
+}, {
+  id: 6,
+  icon: '06',
+  short: '量子实战',
+  title: '量子实战',
+  purpose: '利用叠加与干涉提高目标路线的测量概率，体验量子搜索。',
+  significance: '量子搜索利用干涉放大目标答案的概率，展示量子电路如何处理多个候选结果。',
+  stepPurposes: ['先制备多条候选路线，再用干涉放大目标路线，最后通过测量验证结果。'],
+  subtitle: '制备叠加 / 干涉放大 / 测量最优路线'
+}];
+
+const STEP_PURPOSES = {
+  develop: '洗去曝光区域的光刻胶，露出需要加工的电路窗口。',
+  etch: '沿露出的窗口刻蚀材料，把设计图形真正转移到芯片上。',
+  strip: '去掉剩余的保护胶，留下完整的超导电路图形。',
+  bonding: '用金线连接芯片与样品盒焊盘，把控制和读出信号接到芯片上。',
+  lid: '装上屏蔽盖并固定，减少外界电磁干扰对芯片的影响。',
+  shields: '逐层安装低温屏蔽结构，减少外部热辐射传入芯片。',
+  precooling: '先把设备降到约 4 K，为后续毫开尔文制冷减轻热负荷。',
+  condense: '开启手阀并建立氦循环，让制冷混合物进入工作状态。',
+  evaporation: '调节蒸发抽气速率，继续带走热量并压低混合室温度。',
+  pairing: '观察低温下电子配对与隧穿，认识超导电路的物理基础。',
+  driveResponse: '观察脉冲强度、频率和相位如何改变量子比特的旋转。',
+  protection: '识别并清除干扰，观察噪声如何影响已编排的量子电路。'
+};
+
+return { LEVELS, STEP_PURPOSES };
+},
+4: () => {
 // src\core\scene.js
 /** 管理一个子步骤的资源。切换步骤或离开关卡时统一释放。 */
 function createSceneScope() {
@@ -1226,7 +1361,7 @@ function createSceneScope() {
 
 return { createSceneScope };
 },
-4: () => {
+5: () => {
 // src\core\audio.js
 function createAudio(enabled) {
   function beep(frequency = 520, duration = .08) {
@@ -1248,7 +1383,7 @@ function createAudio(enabled) {
 
 return { createAudio };
 },
-5: () => {
+6: () => {
 // src\core\scoring.js
 function evaluateMetrics(metrics) {
   const values = Object.values(metrics);
@@ -1271,9 +1406,9 @@ function recordResult(progress, id, metrics, achievements) {
 
 return { evaluateMetrics, recordResult };
 },
-6: () => {
+7: () => {
 // src\features\registry.js
-const { mount: fabrication } = loadModule(7);
+const { mount: fabrication } = loadModule(8);
 const { mount: installation } = loadModule(13);
 const { mount: cooling } = loadModule(18);
 const { mount: control } = loadModule(29);
@@ -1290,9 +1425,9 @@ const levelModules = {
 
 return { levelModules };
 },
-7: () => {
+8: () => {
 // src\features\fabrication\index.js
-const { LEVELS } = loadModule(8);
+const { LEVELS, STEP_PURPOSES } = loadModule(3);
 const { cleaningView, lithographyView, processingView, packagingView } = loadModule(9);
 const { svgPoint, animate, randomBetween } = loadModule(12);
 const { mountLaser } = loadModule(11);
@@ -1303,6 +1438,7 @@ function mount({
   shell,
   beep,
   showToast,
+  setStepPurpose,
   awardLevel,
   testStep = null
 }) {
@@ -1423,6 +1559,7 @@ function mount({
   }
   function processing() {
     render(2, '激光绘图已完成曝光。依次点击：显影 → 刻蚀 → 去胶，把图案变成芯片。', processingView());
+    if (testStep === 'develop') setStepPurpose(STEP_PURPOSES.develop);
     let developed = 0, etched = 0;
     function activate(selector) {
       const button = root.querySelector(selector);
@@ -1435,6 +1572,7 @@ function mount({
     }
     root.querySelector('#develop').addEventListener('click', event => {
       developed++;
+      if (developed === 1) setStepPurpose(STEP_PURPOSES.develop);
       beep(540, .03);
       root.querySelector('#develop-windows').setAttribute('opacity', developed / 6);
       root.querySelector('#exposed-pattern').style.opacity = .65 * (1 - developed / 6);
@@ -1444,6 +1582,7 @@ function mount({
       if (developed === 6) {
         finishButton(event.currentTarget);
         activate('#etch');
+        setStepPurpose(STEP_PURPOSES.etch);
         root.querySelector('#process-status').textContent = '轮到刻蚀';
       }
     });
@@ -1461,6 +1600,7 @@ function mount({
       if (etched === 6) {
         finishButton(event.currentTarget);
         activate('#strip');
+        setStepPurpose(STEP_PURPOSES.strip);
         root.querySelector('#process-status').textContent = '最后去胶';
       }
     });
@@ -1507,6 +1647,7 @@ function mount({
     function install() {
       if (installed) return;
       installed = true;
+      setStepPurpose(STEP_PURPOSES.bonding);
       tray.disabled = true;
       tray.hidden = true;
       root.querySelector('.control-panel h3').textContent = '按相同编号连接金线';
@@ -1544,7 +1685,7 @@ function mount({
           root.querySelector('#package-hint').textContent = bonds === 8 ? '八根金线已连接！安装屏蔽盖。' : '连接成功！先点盒子上亮起的焊盘，再点芯片上的同号焊盘。';
           root.querySelector('#bond-count').textContent = bonds + ' / 8';
           beep(700, .05);
-          if (bonds === 8) { root.querySelector('#mount-lid').disabled = false; root.querySelector('#mount-lid').classList.add('ready-action'); }
+          if (bonds === 8) { root.querySelector('#mount-lid').disabled = false; root.querySelector('#mount-lid').classList.add('ready-action'); setStepPurpose(STEP_PURPOSES.lid); }
         };
         pad.addEventListener('click', connect);
         pad.addEventListener('keydown', event => {
@@ -1618,48 +1759,6 @@ function mount({
 }
 
 return { mount };
-},
-8: () => {
-// src\data\levels.js
-const LEVELS = [{
-  id: 1,
-  icon: '01',
-  short: '芯片制备',
-  title: '芯片制造与封装',
-  subtitle: '材料清洁 / 光刻加工 / 精密键合'
-}, {
-  id: 2,
-  icon: '02',
-  short: '设备安装',
-  title: '制冷机与微波链路',
-  subtitle: '分温级装配 / 有向器件 / 链路诊断'
-}, {
-  id: 3,
-  icon: '03',
-  short: '低温实验',
-  title: '毫开尔文降温行动',
-  subtitle: '隔热真空 / 脉管预冷 / 超导隧穿'
-}, {
-  id: 4,
-  icon: '04',
-  short: '量子操控',
-  title: '五 qubit 操控实验',
-  subtitle: '微波校准 / 自定义电路 / 噪声保护'
-}, {
-  id: 5,
-  icon: '05',
-  short: '量子分析',
-  title: '量子分析',
-  subtitle: '重复测量 / 五比特概率 / 理论态对照'
-}, {
-  id: 6,
-  icon: '06',
-  short: '量子实战',
-  title: '量子实战',
-  subtitle: '制备叠加 / 干涉放大 / 测量最优路线'
-}];
-
-return { LEVELS };
 },
 9: () => {
 // src\features\fabrication\views.js
@@ -1952,7 +2051,7 @@ return { svgPoint, animate, randomBetween, shuffle };
 },
 13: () => {
 // src\features\installation\index.js
-const { LEVELS } = loadModule(8);
+const { LEVELS, STEP_PURPOSES } = loadModule(3);
 const { installationView } = loadModule(14);
 const { COMPONENTS, CONNECTORS } = loadModule(16);
 const { shuffle } = loadModule(12);
@@ -1964,6 +2063,7 @@ function mount({
   showToast,
   beep,
   awardLevel,
+  setStepPurpose,
   testStep = null
 }) {
   const broken = new Set(shuffle(CONNECTORS).slice(0, 3).map(c => c.id));
@@ -2076,6 +2176,7 @@ function mount({
   });
   let shieldLayer = 0;
   root.querySelector('#seal-fridge').addEventListener('click', event => {
+    setStepPurpose(STEP_PURPOSES.shields);
     event.currentTarget.disabled = true;
     shieldLayer++;
     root.querySelector('[data-shield="' + shieldLayer + '"]').classList.add('mounted');
@@ -2099,6 +2200,7 @@ function mount({
     '完整性': 100
   }, attempts === 1 ? ['微波链路专家'] : []));
   if(testStep==='shields') {
+    setStepPurpose(STEP_PURPOSES.shields);
     COMPONENTS.forEach(component=>place(component.id,root.querySelector(`[data-slot="${component.id}"]`)));
     reversed.clear();broken.clear();
     COMPONENTS.filter(component=>component.directional).forEach(component=>root.querySelector(`[data-slot="${component.id}"] .slot-symbol`).textContent='↑');
@@ -2372,7 +2474,7 @@ return { createSignalTest };
 },
 18: () => {
 // src\features\cooling\index.js
-const { LEVELS } = loadModule(8);
+const { LEVELS, STEP_PURPOSES } = loadModule(3);
 const { vacuumView } = loadModule(19);
 const { animate, randomBetween, shuffle } = loadModule(12);
 const { mountDilution } = loadModule(24);
@@ -2384,6 +2486,7 @@ function mount({
   shell,
   beep,
   showToast,
+  setStepPurpose,
   awardLevel,
   testStep = null
 }) {
@@ -2443,6 +2546,7 @@ function mount({
       node.addEventListener('keydown',event=>{if(event.key==='Enter')repair(index);});
     });
     root.querySelector('#pulse-start').addEventListener('click', event => {
+      setStepPurpose(STEP_PURPOSES.precooling);
       pulse = true;
       pulseStarted = true;
       event.currentTarget.disabled = true;
@@ -2515,6 +2619,7 @@ function mount({
     });
     root.querySelector('#vacuum-finish').addEventListener('click', condense);
     if(testStep==='precooling') {
+      setStepPurpose(STEP_PURPOSES.precooling);
       progress=1;pumping=true;repaired=true;
       updatePressure(root,1e-2);
       root.querySelector('#pump-start').disabled=true;
@@ -2524,8 +2629,8 @@ function mount({
   }
   function condense() {
     mountDilution({
-      root, scene, beep, showToast, testStep,
-      render: view => shell(LEVELS[2], 1, 2, '打开手阀，建立氦循环；观察两相吸热和电子配对。', view),
+      root, scene, beep, showToast, setStepPurpose, testStep,
+      render: view => { shell(LEVELS[2], 1, 2, '打开手阀，建立氦循环；观察两相吸热和电子配对。', view); setStepPurpose(STEP_PURPOSES.condense); },
       finish: () => awardLevel(3, {'真空与密封':100,'预冷节奏':Math.max(60,100-misses*5),'超导观察':100}, ['毫开尔文实验员'])
     });
   }
@@ -2875,8 +2980,9 @@ const { createHeatFlow } = loadModule(26);
 const { celsius } = loadModule(22);
 const { evaporationTemperature } = loadModule(27);
 const { createCooperPairs } = loadModule(28);
+const { STEP_PURPOSES } = loadModule(3);
 
-function mountDilution({ root, scene, render, beep, showToast, finish, testStep = null }) {
+function mountDilution({ root, scene, render, beep, showToast, setStepPurpose, finish, testStep = null }) {
   render(dilutionView());
   const updateHelium = createHeliumAnimation(root);
   const updateHeat = createHeatFlow(root);
@@ -2885,11 +2991,12 @@ function mountDilution({ root, scene, render, beep, showToast, finish, testStep 
   // 对话框脱离被收起的原始模板容器，保持单屏壳与原生 modal 的生命周期一致。
   root.querySelector('.workbench').append(valve);
   let opening = 0, turn = 0, flow = false, liquid = 0, rate = 0, temperature = 4000, ready = false;
-  let idleElapsed = 0, pointerAdjusting = false, keyboardAdjusting = false;
+  let idleElapsed = 0, pointerAdjusting = false, keyboardAdjusting = false, evaporationExplained = false;
   const rateSlider=root.querySelector('#evap-rate');
   const enterPairing=root.querySelector('#enter-pairing');
   function resetIdle() { idleElapsed=0;enterPairing.disabled=true; }
   function enterPairingStage() {
+    setStepPurpose(STEP_PURPOSES.pairing);
     ready=true;root.querySelector('.workbench').dataset.phase='pairing';
     enterPairing.disabled=true;
     root.querySelector('#condense-status').textContent='低温达标 · 观察配对';
@@ -2944,6 +3051,7 @@ function mountDilution({ root, scene, render, beep, showToast, finish, testStep 
       liquid=Math.min(1,liquid+delta*.12);
       if(liquid===1) {
         root.querySelector('#evap-rate').disabled=false;
+        if(!evaporationExplained) { setStepPurpose(STEP_PURPOSES.evaporation); evaporationExplained=true; }
         if(!ready) {
           root.querySelector('#condense-status').textContent='闭合循环 · 气罐停止供气';
           root.querySelector('#mix-message').textContent='调至 ≤35 mK，松开滑块并停止调节 2 秒，再点击进入电子配对。';
@@ -2980,6 +3088,8 @@ function mountDilution({ root, scene, render, beep, showToast, finish, testStep 
     root.querySelector('#gas-valve').disabled=true;
     root.querySelector('#condense-start').disabled=true;
     root.querySelector('#evap-rate').disabled=false;
+    evaporationExplained=true;
+    setStepPurpose(STEP_PURPOSES.evaporation);
     root.querySelector('#evap-rate').value=rate;
     root.querySelector('#evap-output').textContent=rate+'%';
     if(ready) {
@@ -3178,7 +3288,7 @@ return { tunnelEncounter, createCooperPairs };
 },
 29: () => {
 // src\features\control\index.js
-const { LEVELS } = loadModule(8);
+const { LEVELS, STEP_PURPOSES } = loadModule(3);
 const { controlView, circuitSvg } = loadModule(30);
 const { mountCalibration } = loadModule(32);
 const { mountNoiseDefense } = loadModule(38);
@@ -3187,7 +3297,7 @@ const { updateBloch } = loadModule(31);
 const { createGateTrajectories } = loadModule(40);
 
 function mount(context) {
-  const {root,scene,shell,showToast,beep,awardLevel,experiment}=context;
+  const {root,scene,shell,showToast,beep,awardLevel,experiment,setStepPurpose}=context;
   if(context.testStep==='circuit'||context.testStep==='protection')startCircuit(100);
   else mountCalibration(context,startCircuit);
   function startCircuit(calibrationAccuracy) {
@@ -3282,6 +3392,7 @@ function mount(context) {
       root.querySelector('.workbench').dataset.phase='complete';
     }});
     root.querySelector('#run-algorithm').addEventListener('click',()=>{
+      setStepPurpose(STEP_PURPOSES.protection);
       ideal=runCircuit(circuit);
       root.querySelector('.workbench').dataset.phase='ready';
       root.querySelectorAll('.circuit-editor button').forEach(b=>b.disabled=true);
@@ -3298,7 +3409,7 @@ function mount(context) {
       root.querySelector('.workbench').dataset.playback=purePlayback?'pure':'defense';
       root.querySelector('#protection-start').textContent='再来一次';
       root.querySelector('#pure-playback').hidden=false;
-      root.querySelector('.mission span').textContent=purePlayback
+      root.querySelector('.mission-task span').textContent=purePlayback
         ? '金色虚线表示当前门尚未走过的轨迹，走过即消失。纠缠时，单个比特的状态可能进入球内。'
         : '点击从四周靠近量子比特的噪声，保护 8 秒；点击“再来一次”可重置本次演算。';
       root.querySelector('#processor-status').textContent=purePlayback?'无噪声 · 虚线为当前门尚未走过的轨迹':'点掉来袭干扰 · 保护 8 秒';
@@ -3410,7 +3521,7 @@ return { projectBloch, blochSvg, updateBloch };
 },
 32: () => {
 // src\features\control\calibration.js
-const { LEVELS } = loadModule(8);
+const { LEVELS, STEP_PURPOSES } = loadModule(3);
 const { calibrationView } = loadModule(33);
 const { updateBloch } = loadModule(31);
 const { animate } = loadModule(12);
@@ -3419,7 +3530,9 @@ const { RESONANCE_MHZ, detuningFromSlider, detuningLabel } = loadModule(35);
 const { createBlochTrail } = loadModule(36);
 const { driveAxis, rotateVector } = loadModule(37);
 
-function mountCalibration({root,scene,shell},onComplete) {
+const REFERENCE_DURATION = 60;
+
+function mountCalibration({root,scene,shell,setStepPurpose},onComplete) {
   shell(LEVELS[3],0,2,'对齐青色输出与黄色参考；匹配达到 90% 后发送微波。',calibrationView());
   const find=selector=>root.querySelector(selector),input=selector=>Number(find(selector).value);
   const ctx=find('#pulse-canvas').getContext('2d');
@@ -3440,7 +3553,8 @@ function mountCalibration({root,scene,shell},onComplete) {
   find('#drive-toggle').addEventListener('click',()=>{
     calibrated=true;find('.pulse-settings').hidden=true;find('.response-settings').hidden=false;
     find('#drive-toggle').hidden=true;find('#continuous-drive').hidden=false;find('#calibration-next').disabled=false;
-    root.querySelector('.mission span').textContent='强度控制转速；频率和相位改变旋转轴。非共振时，半圈不一定到 |1⟩，¼ 圈也不一定为等概率叠加。';
+    setStepPurpose(STEP_PURPOSES.driveResponse);
+    root.querySelector('.mission-task span').textContent='强度控制转速；频率和相位改变旋转轴。非共振时，半圈不一定到 |1⟩，¼ 圈也不一定为等概率叠加。';
     prepare(Math.PI);
   });
   find('#reset-response').addEventListener('click',()=>{
@@ -3455,9 +3569,10 @@ function mountCalibration({root,scene,shell},onComplete) {
   });
   function draw(delta,detuning) {
     const amplitude=input('#amplitude')/100,duration=input('#duration'),delay=input('#pulse-delay');
-    // 可见包络取 ±2σ。前一束移出 2/3 时，下一束前缘进入画面。
+    // 校准节奏只取参考波形的 ±2σ 包络，不能让输出滑块改变参考位置或周期。
+    // 前一束参考移出 2/3 时，下一束参考的前缘进入画面。
     travel+=delta*75;
-    const halfWidth=Math.max(60,duration)*6;
+    const halfWidth=(calibrated?Math.max(REFERENCE_DURATION,duration):REFERENCE_DURATION)*6;
     const spacing=900+halfWidth*4/3;
     const center=travel%spacing-halfWidth;
     ctx.fillStyle='#0b1d30';ctx.fillRect(0,0,900,340);ctx.strokeStyle='#284658';ctx.lineWidth=1;
@@ -3481,7 +3596,7 @@ function mountCalibration({root,scene,shell},onComplete) {
       ctx.stroke();
     }
     if(!calibrated) {
-      wave(.68,60,0,RESONANCE_MHZ,'#f0c56c',5);
+      wave(.68,REFERENCE_DURATION,0,RESONANCE_MHZ,'#f0c56c',5);
       match=Math.round(clamp(100-Math.abs(amplitude-.68)*110-Math.abs(duration-60)*1.3-Math.abs(delay)*1.1,0,100));
       find('#drive-toggle').disabled=match<90;
     }
@@ -3886,7 +4001,7 @@ return { createGateTrajectories };
 },
 41: () => {
 // src\features\measurement\index.js
-const { LEVELS } = loadModule(8);
+const { LEVELS } = loadModule(3);
 const { measurementView, noExperimentView } = loadModule(42);
 const { probabilities, reducedBloch, sample, bitstring, describeState } = loadModule(39);
 const { updateBloch } = loadModule(31);
@@ -3955,7 +4070,7 @@ return { measurementView, noExperimentView };
 },
 43: () => {
 // src\features\maze\index.js
-const { LEVELS } = loadModule(8);
+const { LEVELS } = loadModule(3);
 const { mazeView } = loadModule(44);
 const { createSearch, searchStep, optimalIterations } = loadModule(46);
 const { fixedMazeRoutes, MAZE_WINNER } = loadModule(45);
@@ -4153,7 +4268,7 @@ return { createToast };
 },
 48: () => {
 // src\ui\navigation.js
-const { LEVELS } = loadModule(8);
+const { LEVELS } = loadModule(3);
 function renderNavigation({
   levelMap,
   totalStars,
@@ -4169,7 +4284,7 @@ return { renderNavigation };
 },
 49: () => {
 // src\ui\home.js
-const { LEVELS } = loadModule(8);
+const { LEVELS } = loadModule(3);
 const { fridgeSvg } = loadModule(15);
 
 function renderHome({ game, save, startLevel }) {
@@ -4186,13 +4301,34 @@ function renderHome({ game, save, startLevel }) {
 return { renderHome };
 },
 50: () => {
+// src\ui\level-cover.js
+/** 首次进入大关时交代实验目标，玩家主动开始后再创建关卡状态。 */
+function renderLevelCover(game, level, onStart, onHome) {
+  const number = String(level.id).padStart(2, '0');
+  const process = level.subtitle.split(' / ');
+  game.innerHTML = `<section class="level-cover" aria-labelledby="cover-title">
+    <div class="cover-top"><span class="cover-brand">QUANTUM LAB / 量子启航</span><span>实验 ${number} / 06</span></div>
+    <div class="cover-content">
+      <div class="cover-heading"><span class="cover-number" aria-hidden="true">${number}</span><p>第 ${level.id} 大关 · ${level.short}</p><h1 id="cover-title">${level.title}</h1><div class="cover-process">${process.map((item, index) => `<span><b>${index + 1}</b>${item}</span>`).join('')}</div></div>
+      <div class="cover-story"><div><span class="cover-label">这一关要做什么</span><p>${level.purpose}</p></div><div><p>${level.significance}</p></div></div>
+    </div>
+    <div class="cover-actions"><button class="secondary" id="cover-home">返回实验室</button><button class="primary" id="cover-start">开始本关 →</button></div>
+  </section>`;
+  game.querySelector('#cover-home').addEventListener('click', onHome);
+  game.querySelector('#cover-start').addEventListener('click', onStart);
+  game.querySelector('#cover-start').focus({ preventScroll: true });
+}
+
+return { renderLevelCover };
+},
+51: () => {
 // src\ui\level-shell.js
 function renderLevelShell(game, level, step, stepCount, mission, content) {
   game.innerHTML = `<section class="level-shell" data-current-level="${level.id}">
  <header class="level-head"><button class="hud-button" id="scene-menu-open" aria-label="打开关卡与设置">☰</button><div><span class="eyebrow">EXPERIMENT ${String(level.id).padStart(2, '0')}</span><h1>${level.title}</h1><p>${level.subtitle}</p></div><div class="step-pills">${Array.from({
     length: stepCount
   }, (_, i) => `<span class="${i <= step ? 'active' : ''}"></span>`).join('')}<small>${step + 1} / ${stepCount}</small></div><button class="hud-button" id="scene-help-open" aria-label="打开实验指南">?</button></header>
- <div class="mission"><b>本次任务</b><span>${mission}</span></div>${content}</section>`;
+ <div class="mission"><div class="mission-goal"><b>本关目的</b><span>${level.stepPurposes[step]}</span></div><div class="mission-task"><b>当前任务</b><span>${mission}</span></div></div>${content}</section>`;
   // 原理仍可查阅，但默认只展示当前操作，减轻初次进入时的阅读负担。
   game.querySelectorAll('.science-note').forEach(note => {
     const details = document.createElement('details');
@@ -4217,9 +4353,9 @@ function renderLevelShell(game, level, step, stepCount, mission, content) {
 
 return { renderLevelShell };
 },
-51: () => {
+52: () => {
 // src\ui\results.js
-const { LEVELS } = loadModule(8);
+const { LEVELS } = loadModule(3);
 function renderResult({
   game,
   id,
@@ -4251,7 +4387,7 @@ function renderFinal({
 
 return { renderResult, renderFinal };
 },
-52: () => {
+53: () => {
 // src\ui\immersive.js
 /** 单屏视图编排：移动真实控件，不复制状态，也不修改各关的计算逻辑。 */
 function mountImmersive(root, scene) {
@@ -4299,7 +4435,7 @@ function mountImmersive(root, scene) {
   // 说明、完整流程和放大图进入指南，不再挤压操作画面。
   source.querySelectorAll('.science-help,details.junction-inset').forEach(node => helpContent.append(node));
   const fullMission = document.createElement('p');
-  fullMission.textContent = root.querySelector('.mission span').textContent;
+  fullMission.textContent = root.querySelector('.mission-task span').textContent;
   helpContent.prepend(fullMission);
   scene.listen(root.querySelector('#scene-help-open'), 'click', () => help.showModal());
   root.querySelectorAll('[data-close-sheet]').forEach(button => scene.listen(button, 'click', () => button.closest('dialog').close()));
@@ -4458,12 +4594,12 @@ function mountImmersive(root, scene) {
 
 return { mountImmersive };
 },
-53: () => {
+54: () => {
 // src\config.js
 const ENABLE_TEST_NAVIGATION = false;
 return { ENABLE_TEST_NAVIGATION };
 },
-54: () => {
+55: () => {
 // src\core\test-session.js
 const { createProgressStore } = loadModule(2);
 const { runCircuit } = loadModule(39);
@@ -4486,7 +4622,7 @@ function createTestSession(normalState) {
 
 return { createTestSession };
 },
-55: () => {
+56: () => {
 // src\ui\test-navigation.js
 const TEST_DESTINATIONS = [
   {level:1,step:'cleaning',label:'1.1 晶圆清洁'},
