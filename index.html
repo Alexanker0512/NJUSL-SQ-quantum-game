@@ -1141,7 +1141,7 @@ function createApplication(document) {
     renderHome({
       game: root,
       save: progress.state,
-      startExperiment: () => registerExperimenter(() => startLevel(progress.state.unlocked))
+      startExperiment: () => startLevel(progress.state.unlocked)
     });
     testNavigation?.attach(root);
   }
