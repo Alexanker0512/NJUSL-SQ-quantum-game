@@ -317,6 +317,16 @@ select {background:#fff;border:1px solid #c3d6e1;color:#2e5d77;padding:8px;borde
 @media(min-width:700px){.pressure-instrument strong{font-size:17px;}}
 .pair-electron.selected circle {stroke:#d9b96c;stroke-width:5;}
 .pair-electron.paired {opacity:.12;pointer-events:none;}
+
+/* 手机上的横向实验图会整体缩放，单独放大图标和点击区域。 */
+@media(max-width:760px) {
+  [data-scene=mixture][data-phase=pairing] .mixture-viewport>#mixture-surface {min-height:0;max-height:28%;height:28%;flex:0 1 28%;}
+  #junction-surface .electron-hit {r:38px;}
+  #junction-surface .electron-dot {r:24px;}
+  #junction-surface .electron-spin {font-size:32px;}
+  #junction-surface .cooper-pair-symbol {transform:scale(1.65);transform-origin:0 0;}
+  [data-scene=mixture][data-phase=pairing] .junction-inset .inset-head {flex-wrap:wrap;gap:4px 12px;font-size:13px;}
+}
 .blocked-motion {animation:blocked 1.7s;}
 @keyframes blocked {0%,100%{transform:translateX(0);}50%{transform:translateX(63px);}60%{transform:translateX(57px);}}
 
@@ -2843,7 +2853,7 @@ function dilutionView() {
     <svg id="junction-surface" viewBox="30 0 680 190" aria-label="随机漂移电子与概率隧穿的 Cooper 对">
       <rect x="40" y="20" width="290" height="145" rx="10" fill="#4285a633"/><rect x="390" y="20" width="290" height="145" rx="10" fill="#4285a633"/><rect x="344" y="10" width="30" height="166" fill="#d4ae7977" stroke="#d8b276"/>
       <text x="184" y="188" text-anchor="middle" class="svg-label">电极</text><text x="360" y="188" text-anchor="middle" class="svg-label">绝缘层</text><text x="536" y="188" text-anchor="middle" class="svg-label">电极</text>
-      <g id="single-electrons">${Array.from({length:10},(_,i)=>`<g class="pair-electron" data-electron="${i}" data-spin="${i%2 ? -1:1}" role="button" tabindex="0" aria-label="电子 ${i+1}"><circle r="25" fill="transparent"/><circle r="17" fill="${i%2?'#a691df':'#4cbee0'}"/><text y="6" text-anchor="middle" fill="white" font-size="23">${i%2?'↓':'↑'}</text></g>`).join('')}</g><g id="cooper-pairs"></g>
+      <g id="single-electrons">${Array.from({length:10},(_,i)=>`<g class="pair-electron" data-electron="${i}" data-spin="${i%2 ? -1:1}" role="button" tabindex="0" aria-label="电子 ${i+1}"><circle class="electron-hit" r="25" fill="transparent"/><circle class="electron-dot" r="17" fill="${i%2?'#a691df':'#4cbee0'}"/><text class="electron-spin" y="6" text-anchor="middle" fill="white" font-size="23">${i%2?'↓':'↑'}</text></g>`).join('')}</g><g id="cooper-pairs"></g>
     </svg></div></section>
     <aside class="control-panel"><button id="gas-valve" class="primary">打开手阀面板</button><button id="condense-start" class="primary" disabled>开始冷凝</button>
       <label class="range-control evaporation-control">蒸发室抽气速率 <output id="evap-output">0%</output><span class="rate-window-guide">调至 ≤35 mK；松开并停止调节 2 秒后，点击进入电子配对</span><span class="rate-slider"><span class="rate-window" aria-hidden="true"></span><input id="evap-rate" type="range" min="0" max="100" step="0.1" value="0" disabled></span><span class="rate-window-caption">精调窗口两端 50 mK · 中间最低 10 mK</span></label>
@@ -3349,7 +3359,7 @@ function createCooperPairs({root,showToast,beep}) {
       if ((selected.x<350)!==(electron.x<350)) {showToast('请在同一侧电极中选择电子。');return;}
       const partners=[selected,electron];
       const node=document.createElementNS('http://www.w3.org/2000/svg','g');
-      node.innerHTML='<circle cx="-11" r="13" fill="#53d3da"/><circle cx="11" r="13" fill="#b79bdd"/><path d="M-11 0H11" stroke="#bcffe6" stroke-width="4"/>';
+      node.innerHTML='<g class="cooper-pair-symbol"><circle cx="-11" r="13" fill="#53d3da"/><circle cx="11" r="13" fill="#b79bdd"/><path d="M-11 0H11" stroke="#bcffe6" stroke-width="4"/></g>';
       root.querySelector('#cooper-pairs').append(node);
       pairs.push({node,partners,x:(selected.x+electron.x)/2,y:(selected.y+electron.y)/2,
         vx:selected.x<350?55:-55,vy:randomBetween(-9,9),firstEncounter:true,crossing:false,counted:false,removed:false});
