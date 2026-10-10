@@ -112,9 +112,7 @@ a {color:#1f7394;}
 .step-pills span.active {background:#50869f;}
 .step-pills small {margin-left:9px;font:11px monospace;color:var(--muted);}
 .mission {display:flex;flex-direction:column;gap:4px;font-size:12px;line-height:1.7;padding:15px 19px;background:#e1ecf28f;border:1px solid #c7d9e3;border-left:3px solid #5d8fa8;border-radius:5px;margin-bottom:21px;}
-.mission-goal,.mission-task {display:flex;align-items:flex-start;gap:17px;}
-.mission b {flex-shrink:0;color:#32627f;}
-.mission span {color:#58788c;}
+.mission-summary {margin:0;color:#58788c;}
 .workbench {position:relative;background:#fefeff;border:1px solid #cbdbe5;border-radius:12px;box-shadow:0 18px 55px #23465c10,0 2px 4px #23465c06;overflow:hidden;}
 .instrument-head {display:flex;justify-content:space-between;gap:18px;align-items:center;padding:23px 25px;border-bottom:1px solid #dce7ed;background:linear-gradient(180deg,#fff,#f6f9fb);}
 .instrument-head .eyebrow {font-size:9px;margin:0 0 8px;color:#60869d;}
@@ -603,9 +601,8 @@ body.playing .step-pills span {width:12px;background:#2b4c57;}
 body.playing .step-pills span.active {background:#49ddc7;}
 body.playing .step-pills small {font-size:11px;color:#a5cccd;}
 .hud-button {flex:none;min-width:44px;height:44px;border:0;border-radius:8px;background:transparent;color:#68e3d2;font-size:21px;}
-body.playing .mission {border:0;border-radius:0;background:#10242e;padding:8px 14px;margin:0;gap:8px;min-height:40px;font-size:12px;line-height:1.5;}
-body.playing .mission b {color:#4de1c2;white-space:nowrap;}
-body.playing .mission span {color:#a8d3d8;}
+body.playing .mission {border:0;border-radius:0;background:#10242e;padding:5px 12px;margin:0;min-height:0;font-size:12px;line-height:1.5;}
+body.playing .mission-summary {color:#a8d3d8;}
 body.playing .workbench {min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;background:#081923;border:0;border-radius:0;box-shadow:none;overflow:hidden;}
 .stage-main {display:grid;grid-template-rows:minmax(0,1fr) auto;min-height:0;position:relative;background:radial-gradient(ellipse at 50% 40%,#173b4c 0%,#0b202c 55%,#08151f 100%);}
 .stage-main::before {content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(#4385980c 1px,transparent 1px),linear-gradient(90deg,#4385980c 1px,transparent 1px);background-size:40px 40px;}
@@ -738,7 +735,7 @@ body.playing .workbench {min-height:0;display:grid;grid-template-rows:minmax(0,1
  .stage-art .qubit-array {grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));}
  .stage-art .qubit-unit:last-child {grid-column:auto;max-width:none;}
  body.playing .level-shell {grid-template-rows:46px auto minmax(0,1fr);}
- body.playing .mission {padding:5px 10px;font-size:11px;min-height:30px;}
+ body.playing .mission {padding:4px 10px;font-size:12px;min-height:0;}
  .action-dock.control-panel {padding-top:6px;padding-bottom:max(6px,env(safe-area-inset-bottom));gap:5px;}
  .stage-hud {padding:5px 10px;gap:4px 10px;}
  .stage-hud .scene-status {display:none;}
@@ -1176,7 +1173,7 @@ function createApplication(document) {
       scene,
       beep,
       showToast,
-      setStepPurpose: purpose => { root.querySelector('.mission-goal span').textContent = purpose; },
+      setStepPurpose: purpose => { root.querySelector('.mission-summary').textContent = purpose; },
       awardLevel,
       chipName: progress.state.chipName,
       testStep: ENABLE_TEST_NAVIGATION && testing() ? testStep : null,
@@ -1320,10 +1317,10 @@ const LEVELS = [{
   purpose: '在晶圆上做出电路并封装接线，让量子芯片能够接收控制信号。',
   significance: '量子实验从可用的芯片开始。清洁、图形加工和封装决定了电路能否稳定地接入后续设备。',
   stepPurposes: [
-    '清除晶圆表面的颗粒和有机污染，避免它们破坏后续电路图形。',
-    '描绘量子比特的电路结构，并通过光刻把图形转移到晶圆表面。',
-    '通过显影、刻蚀和去胶加工量子芯片，把设计图形变成实际电路。',
-    '封装芯片并完成电连接，让控制和读出信号能够进出芯片。'
+    '按住污渍，用吹扫或臭氧清洁晶圆。杂质会破坏电路图形，洁净表面是可靠芯片的起点。',
+    '按方向键描绘十字形电路。它形成量子比特的电容结构，为储存和操控量子态提供基础。',
+    '依次显影、刻蚀和去胶，将设计变成电路。光刻胶保护保留区域，刻蚀去除不需要的材料。',
+    '装入芯片、连接焊盘并盖好屏蔽盖。封装既接通控制与读出信号，也保护芯片免受外界干扰。'
   ],
   subtitle: '材料清洁 / 光刻加工 / 精密键合'
 }, {
@@ -1333,18 +1330,18 @@ const LEVELS = [{
   title: '制冷机与微波链路',
   purpose: '把芯片接入低温设备，并检查传递控制与测量信号的链路。',
   significance: '芯片需要冷却，也需要可靠的信号通道；器件方向或连接出错，控制脉冲与读出信号就无法正确传输。',
-  stepPurposes: ['把器件装在对应温级并检查链路，让微波信号能到达芯片并返回。'],
+  stepPurposes: ['按温级装器件并检查线路。衰减、滤波和隔离器件处理微波信号，让芯片能受控和被读取。'],
   subtitle: '分温级装配 / 有向器件 / 链路诊断'
 }, {
   id: 3,
   icon: '03',
   short: '低温实验',
-  title: '毫开尔文降温行动',
+  title: '超低温行动',
   purpose: '隔绝外界热量并逐级降温，让芯片进入低热噪声的超导工作环境。',
   significance: '环境太热时，热扰动会淹没脆弱的量子状态。低温和隔热是超导量子比特工作的前提。',
   stepPurposes: [
-    '抽走空气、修复漏点，减少气体传热，为后续降温创造隔热环境。',
-    '建立氦循环并继续降温，让混合室接近量子芯片所需的极低温。'
+    '启动抽气并修复漏点，建立真空环境。减少气体传热，才能保护制冷机内部的低温区域。',
+    '建立氦循环，将混合室继续降温。低温减少热扰动，为超导量子芯片提供稳定的工作环境。'
   ],
   subtitle: '隔热真空 / 脉管预冷 / 超导隧穿'
 }, {
@@ -1355,8 +1352,8 @@ const LEVELS = [{
   purpose: '校准微波脉冲并编排量子门，控制量子比特的状态。',
   significance: '量子计算依靠精确的脉冲和量子门；校准与噪声控制决定操作能否按预期完成。',
   stepPurposes: [
-    '校准微波脉冲的形状和时序，让它按预期驱动量子比特。',
-    '编排量子门并运行电路，把量子比特制备成需要的状态。'
+    '调节青色脉冲，使它匹配黄色参考。准确的形状与时序，才能让量子比特按预期改变状态。',
+    '编排量子门并运行电路。量子门改变量子比特的状态，双比特门还能建立比特间的纠缠。'
   ],
   subtitle: '微波校准 / 自定义电路 / 噪声保护'
 }, {
@@ -1366,7 +1363,7 @@ const LEVELS = [{
   title: '量子分析',
   purpose: '重复测量并统计结果，检验量子电路产生的状态。',
   significance: '单次测量只给出一次结果；重复实验形成的统计分布，才能用来判断电路运行得如何。',
-  stepPurposes: ['重复读取量子比特并比较概率分布，判断实验结果与目标状态有多接近。'],
+  stepPurposes: ['切换测量基并重复采样。单次测量只给出一个结果，统计分布才能揭示量子态的特征。'],
   subtitle: '重复测量 / 五比特概率 / 理论态对照'
 }, {
   id: 6,
@@ -1375,23 +1372,24 @@ const LEVELS = [{
   title: '量子实战',
   purpose: '利用叠加与干涉提高目标路线的测量概率，体验量子搜索。',
   significance: '量子搜索利用干涉放大目标答案的概率，展示量子电路如何处理多个候选结果。',
-  stepPurposes: ['先制备多条候选路线，再用干涉放大目标路线，最后通过测量验证结果。'],
+  stepPurposes: ['制备叠加、放大目标路线并测量。量子搜索利用干涉提高找到目标的概率，体验量子算法的作用。'],
   subtitle: '制备叠加 / 干涉放大 / 测量最优路线'
 }];
 
 const STEP_PURPOSES = {
-  develop: '洗去曝光区域的光刻胶，露出需要加工的电路窗口。',
-  etch: '沿露出的窗口刻蚀材料，把设计图形真正转移到芯片上。',
-  strip: '去掉剩余的保护胶，留下完整的超导电路图形。',
-  bonding: '用金线连接芯片与样品盒焊盘，把控制和读出信号接到芯片上。',
-  lid: '装上屏蔽盖并固定，减少外界电磁干扰对芯片的影响。',
-  shields: '逐层安装低温屏蔽结构，减少外部热辐射传入芯片。',
-  precooling: '先把设备降到约 4 K，为后续毫开尔文制冷减轻热负荷。',
-  condense: '开启手阀并建立氦循环，让制冷混合物进入工作状态。',
-  evaporation: '调节蒸发抽气速率，继续带走热量并压低混合室温度。',
-  pairing: '观察低温下电子配对与隧穿，认识超导电路的物理基础。',
-  driveResponse: '观察脉冲强度、频率和相位如何改变量子比特的旋转。',
-  protection: '识别并清除干扰，观察噪声如何影响已编排的量子电路。'
+  develop: '点击显影，去除曝光区域的光刻胶。显影打开加工窗口，让后续刻蚀能作用于指定区域。',
+  etch: '沿电路窗口刻蚀材料。保留需要的金属结构，把晶圆上的设计图形变成真实电路。',
+  strip: '去掉加工后剩余的光刻胶。露出的金属电路才能进行后续封装，并与外部信号连接。',
+  bonding: '连接同号焊盘，完成八根金线键合。金线把芯片接到外部电路，让微波控制和测量信号进出。',
+  lid: '装上屏蔽盖并拧紧螺丝。盖板形成屏蔽腔，减少外界电磁干扰，保护芯片上的微弱信号。',
+  shields: '逐层装上不同温级的屏蔽筒。每层拦截部分热辐射，保护最冷处的量子芯片。',
+  precooling: '用脉管将设备预冷到约 4 K。先移除大部分热量，才能让后续氦制冷达到毫开尔文温区。',
+  condense: '打开手阀充注氦，建立循环。氦被冷凝并送入混合室，为持续带走热量提供工作介质。',
+  evaporation: '调节抽气速率，维持氦的循环。³He 从浓相进入稀相时吸热，使混合室达到极低温。',
+  pairing: '点选同侧反向电子，观察配对与隧穿。电子成对是超导的重要基础，也是量子芯片工作的关键。',
+  driveResponse: '调节微波强度、频率和相位。它们决定量子比特的旋转速度和方向，从而实现状态操控。',
+  playback: '回看量子门的演化轨迹。观察状态怎样随门操作改变，以及纠缠如何影响单个比特的状态。',
+  protection: '点击清除来袭干扰，保护正在运行的电路。噪声会扰动量子态，让实验结果偏离预期。'
 };
 
 return { LEVELS, STEP_PURPOSES };
@@ -3534,6 +3532,7 @@ function mount(context) {
     });
     function replay(withoutNoise) {
       purePlayback=withoutNoise;
+      setStepPurpose(purePlayback ? STEP_PURPOSES.playback : STEP_PURPOSES.protection);
       trajectories.clear();
       running=true;finished=false;noise=0;displayedStep=-1;
       root.querySelector('#algorithm-result').hidden=true;
@@ -3541,7 +3540,7 @@ function mount(context) {
       root.querySelector('.workbench').dataset.playback=purePlayback?'pure':'defense';
       root.querySelector('#protection-start').textContent='再来一次';
       root.querySelector('#pure-playback').hidden=false;
-      root.querySelector('.mission-task span').textContent=purePlayback
+      root.querySelector('.mission-details').textContent=purePlayback
         ? '金色虚线表示当前门尚未走过的轨迹，走过即消失。纠缠时，单个比特的状态可能进入球内。'
         : '点击从四周靠近量子比特的噪声，保护 8 秒；点击“再来一次”可重置本次演算。';
       root.querySelector('#processor-status').textContent=purePlayback?'无噪声 · 虚线为当前门尚未走过的轨迹':'点掉来袭干扰 · 保护 8 秒';
@@ -3686,7 +3685,7 @@ function mountCalibration({root,scene,shell,setStepPurpose},onComplete) {
     calibrated=true;find('.pulse-settings').hidden=true;find('.response-settings').hidden=false;
     find('#drive-toggle').hidden=true;find('#continuous-drive').hidden=false;find('#calibration-next').disabled=false;
     setStepPurpose(STEP_PURPOSES.driveResponse);
-    root.querySelector('.mission-task span').textContent='强度控制转速；频率和相位改变旋转轴。非共振时，半圈不一定到 |1⟩，¼ 圈也不一定为等概率叠加。';
+    root.querySelector('.mission-details').textContent='强度控制转速；频率和相位改变旋转轴。非共振时，半圈不一定到 |1⟩，¼ 圈也不一定为等概率叠加。';
     prepare(Math.PI);
   });
   find('#reset-response').addEventListener('click',()=>{
@@ -4464,7 +4463,7 @@ function renderLevelShell(game, level, step, stepCount, mission, content) {
  <header class="level-head"><button class="hud-button" id="scene-menu-open" aria-label="打开关卡与设置">☰</button><div><span class="eyebrow">EXPERIMENT ${String(level.id).padStart(2, '0')}</span><h1>${level.title}</h1><p>${level.subtitle}</p></div><div class="step-pills">${Array.from({
     length: stepCount
   }, (_, i) => `<span class="${i <= step ? 'active' : ''}"></span>`).join('')}<small>${step + 1} / ${stepCount}</small></div><button class="hud-button" id="scene-help-open" aria-label="打开实验指南">?</button></header>
- <div class="mission"><div class="mission-goal"><b>本关目的</b><span>${level.stepPurposes[step]}</span></div><div class="mission-task"><b>当前任务</b><span>${mission}</span></div></div>${content}</section>`;
+ <div class="mission"><p class="mission-summary">${level.stepPurposes[step]}</p></div><p class="mission-details" hidden>${mission}</p>${content}</section>`;
   // 原理仍可查阅，但默认只展示当前操作，减轻初次进入时的阅读负担。
   game.querySelectorAll('.science-note').forEach(note => {
     const details = document.createElement('details');
@@ -4592,8 +4591,8 @@ function mountImmersive(root, scene) {
 
   // 说明、完整流程和放大图进入指南，不再挤压操作画面。
   source.querySelectorAll('.science-help,details.junction-inset').forEach(node => helpContent.append(node));
-  const fullMission = document.createElement('p');
-  fullMission.textContent = root.querySelector('.mission-task span').textContent;
+  const fullMission = root.querySelector('.mission-details');
+  fullMission.hidden = false;
   helpContent.prepend(fullMission);
   scene.listen(root.querySelector('#scene-help-open'), 'click', () => help.showModal());
   root.querySelectorAll('[data-close-sheet]').forEach(button => scene.listen(button, 'click', () => button.closest('dialog').close()));
