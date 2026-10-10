@@ -589,7 +589,8 @@ body #game {min-height:0;max-width:1200px;padding:0;}
 .launch-actions .primary {background:#5cdec3;border:1px solid #8afce0;color:#063638;}
 .launch-actions .secondary {background:#163443;border-color:#4b7787;color:#aad6db;}
 .launch-actions small {flex-basis:100%;font-size:11px;color:#749eab;}
-body.playing {height:100dvh;overflow:hidden;overscroll-behavior:none;}
+html:has(body.playing) {overflow:hidden;overscroll-behavior:none;}
+body.playing {position:fixed;inset:0;height:100dvh;overflow:hidden;overscroll-behavior:none;}
 body.playing>.topbar,body.playing>.footer {display:none;}
 body.playing #game {height:100dvh;min-height:0;max-width:1200px;padding:0;margin:auto;}
 body.playing .level-shell {height:100%;max-width:none;display:grid;grid-template-rows:52px auto minmax(0,1fr);padding-top:env(safe-area-inset-top);}
@@ -637,7 +638,7 @@ body.playing .workbench {min-height:0;display:grid;grid-template-rows:minmax(0,1
 .scene-concealed {display:none!important;}
 .action-dock .range-control,.action-dock .select-control {color:#acd2db;font-size:12px;margin:0;}
 .action-dock select {color:#d1eae7;background:#163844;border-color:#436674;min-height:44px;}
-.action-dock input[type=range] {accent-color:#58dbbf;min-height:28px;margin:0;touch-action:pan-x;}
+.action-dock input[type=range] {accent-color:#58dbbf;min-height:28px;margin:0;touch-action:none;}
 .action-dock .range-control output {color:#6edcca;font-size:11px;margin:0;display:inline;float:right;}
 .action-dock .range-control {width:100%;}
 .action-dock .control-grid {display:grid;grid-template-columns:1fr 1fr;width:100%;gap:16px;}
@@ -906,6 +907,11 @@ body.playing .workbench {min-height:0;display:grid;grid-template-rows:minmax(0,1
 .playing,.scene-sheet {user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
 .playing button,.playing [role=button],.scene-sheet button {touch-action:manipulation;}
 .playing input[type=text],.playing textarea {user-select:text;-webkit-user-select:text;}
+/* 实验操作不交给浏览器平移；指南、菜单与数据列表保留内部滚动。 */
+.playing .level-head,.playing .mission,.playing .stage-art,.playing .stage-hud,.playing .action-dock {touch-action:none;}
+.playing [data-scene=measurement] .stage-art {touch-action:pan-y;}
+.scene-sheet,.level-cover {overscroll-behavior:contain;}
+.playing img {pointer-events:none;-webkit-user-drag:none;}
 .fridge-svg.shielded .vacuum-can {visibility:hidden;}
 .laser-guide path {stroke:#fff2be!important;stroke-width:3!important;opacity:1!important;stroke-dasharray:5 3;filter:drop-shadow(0 0 1px #101b36);}
 .laser-ink {stroke:#51ff7b;stroke-width:4;filter:drop-shadow(0 0 3px #37e965);}
@@ -924,7 +930,7 @@ body.playing .workbench {min-height:0;display:grid;grid-template-rows:minmax(0,1
 [data-scene=processor][data-playback=pure] .processor-hud>span:not(:first-child) {display:none;}
 .parameter-match {display:block;color:#ffe29a;font-size:11px;line-height:1.4;}
 .rate-window-guide,.rate-window-caption {display:block;font-size:12px;color:#cfebe8;line-height:1.5;}
-.rate-slider {position:relative;display:block;}
+.rate-slider {position:relative;display:block;width:80%;margin-inline:auto;}
 .rate-window {position:absolute;left:50%;width:40%;top:3px;bottom:3px;border:2px solid #73ecd3;border-radius:5px;background:#57dcbd26;pointer-events:none;}
 .rate-slider input {position:relative;z-index:1;width:100%;}
 .qubit-unit.under-threat {animation:target-warning .7s ease-in-out infinite;}
@@ -4585,8 +4591,8 @@ function mountImmersive(root, scene) {
   function actions(ids) { return ids.map(id => move(id, dock)); }
   function currentActions(buttons) { buttons.forEach(button => conceal(button, button.disabled)); }
   const updates = [];
-  scene.listen(workbench, 'contextmenu', event => {
-    if (event.target.closest('button,[role=button],svg,input[type=range]')) event.preventDefault();
+  scene.listen(root, 'contextmenu', event => {
+    if (!event.target.closest('input[type=text],textarea')) event.preventDefault();
   });
 
   // 说明、完整流程和放大图进入指南，不再挤压操作画面。
