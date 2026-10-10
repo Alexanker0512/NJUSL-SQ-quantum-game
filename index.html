@@ -1953,7 +1953,7 @@ function packagingView() {
  <g id="bond-wires"></g><g id="bond-pads"></g>
  <g id="package-lid" opacity="0" pointer-events="none"><rect x="145" y="96" width="500" height="384" rx="23" fill="url(#lid-metal)" stroke="#dae6ed" stroke-width="4"/><rect x="169" y="120" width="452" height="336" rx="15" fill="none" stroke="#58748a"/>
  ${packageLogo(323, 191, 144, 118)}
- <text x="395" y="${BRAND.id === 'original' ? 270 : 345}" text-anchor="middle" fill="#364d5c" font-size="23" font-family="monospace">${BRAND.id === 'original' ? 'QLAB' : BRAND.headerEnglish || BRAND.logoText} / 5Q-TRANSMON</text><text x="395" y="${BRAND.id === 'original' ? 303 : 376}" text-anchor="middle" fill="#5d7585" font-size="13">RF SHIELDED SAMPLE PACKAGE</text></g>
+ <text x="395" y="${BRAND.id === 'original' ? 270 : 345}" text-anchor="middle" fill="#364d5c" font-size="23" font-family="monospace">${BRAND.id === 'original' ? 'QLAB' : BRAND.headerEnglish || BRAND.headerName} / 5Q-TRANSMON</text><text x="395" y="${BRAND.id === 'original' ? 303 : 376}" text-anchor="middle" fill="#5d7585" font-size="13">RF SHIELDED SAMPLE PACKAGE</text></g>
  <g id="lid-screws"></g>
  <text x="395" y="544" text-anchor="middle" class="svg-label">镀金铜样品座 · 芯片载台 · 微波连接器</text>
  </svg></section><aside class="control-panel"><h3>芯片托盘</h3><button id="chip-tray" class="chip-tray-real" aria-label="选择或拖动芯片">${chipSvg('tray', false)}<span>拖到样品盒 / 点选后点击盒内</span></button>
@@ -2365,27 +2365,15 @@ function fridgeLogo(className) {
 }
 
 function fridgeNameplate() {
-  if (BRAND.id === 'original') return '';
-  if (BRAND.id === 'launchq') {
-    return `<g class="fridge-nameplate" pointer-events="none">
-      <text x="320" y="42" text-anchor="middle" fill="#173852" font-size="14" font-weight="700" aria-label="${BRAND.machineName}"><tspan x="320">启明星</tspan><tspan x="320" dy="20">量子计算机</tspan></text>
-    </g>`;
-  }
-  const mark = BRAND.logoUrl
-    ? `<image href="${BRAND.logoUrl}" x="242" y="-150" width="156" height="128" preserveAspectRatio="xMidYMid meet"/>`
-    : `<text x="320" y="-24" text-anchor="middle" fill="#e5f6ff" font-size="29" font-weight="700">${BRAND.logoText}</text>`;
-  const name = BRAND.machineName
-    ? `<text x="320" y="-3" text-anchor="middle" fill="#e5f6ff" font-size="20" font-weight="700">${BRAND.machineName}</text>`
-    : '';
+  if (BRAND.id !== 'launchq') return '';
   return `<g class="fridge-nameplate" pointer-events="none">
-    ${mark}${name}
+    <text x="320" y="42" text-anchor="middle" fill="#173852" font-size="14" font-weight="700" aria-label="${BRAND.machineName}"><tspan x="320">启明星</tspan><tspan x="320" dy="20">量子计算机</tspan></text>
   </g>`;
 }
 
 /** 盘、线路和样品挂点使用同一坐标系。外壳由内至外分四次安装。 */
 function fridgeSvg(prefix = 'fridge', overlay = '', sealed = false) {
-  const viewBox = BRAND.id === 'njusl' ? '70 -160 545 980' : '70 10 545 810';
-  return `<svg class="fridge-svg ${sealed ? 'sealed' : ''}" viewBox="${viewBox}" aria-label="${BRAND.machineName || '带分层辐射屏和 MC 下方样品的稀释制冷机'}">
+  return `<svg class="fridge-svg ${sealed ? 'sealed' : ''}" viewBox="70 10 545 810" aria-label="${BRAND.machineName || '带分层辐射屏和 MC 下方样品的稀释制冷机'}">
   <defs>
     <linearGradient id="${prefix}-copper"><stop stop-color="#644025"/><stop offset=".2" stop-color="#bf9556"/><stop offset=".43" stop-color="#f1d9a2"/><stop offset=".62" stop-color="#aa783e"/><stop offset=".85" stop-color="#d9bc7d"/><stop offset="1" stop-color="#70502f"/></linearGradient>
     <linearGradient id="${prefix}-steel"><stop stop-color="#425c6c"/><stop offset=".28" stop-color="#d4e1e5"/><stop offset=".48" stop-color="#8fa7b6"/><stop offset=".8" stop-color="#cad9df"/><stop offset="1" stop-color="#365366"/></linearGradient>
@@ -4420,10 +4408,10 @@ return { renderNavigation };
 // src\ui\home.js
 const { LEVELS } = loadModule(3);
 const { fridgeSvg } = loadModule(16);
-const { BRAND, ENABLE_TEST_NAVIGATION } = loadModule(13);
+const { BRAND } = loadModule(13);
 
 function renderHome({ game, save, startExperiment }) {
-  const developmentLabel = ENABLE_TEST_NAVIGATION && BRAND.developmentLabel ? ` ${BRAND.developmentLabel}` : '';
+  const developmentLabel = BRAND.developmentLabel ? ` ${BRAND.developmentLabel}` : '';
   game.innerHTML = `<section class="launch-screen">
     <div class="launch-heading"><span>${BRAND.masthead}${developmentLabel}</span><h1>${BRAND.homeTitle}</h1><p>造芯片 · 降温 · 操控五个量子比特</p></div>
     <div class="launch-equipment">${fridgeSvg('hero')}</div>
